@@ -1,0 +1,49 @@
+{% load staticfiles %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Django Highcharts Example</title>
+</head>
+<body>
+<div id="container"></div>
+<script src="{% static 'vendor/hc_dir/highcharts.src.js' %}"></script>
+<script src="{% static 'vendor/hc_dir/modules/exporting.src.js' %}"></script>
+<script>
+    Highcharts.chart('container', {
+        chart :{
+          type: 'column'
+        },
+        title:{
+          text: 'Titanic Survivors by Ticket Class'
+        },
+        exporting:{
+            chartOptions:{
+                title: {
+                    text:'Titanic Survivors by Ticket Class'
+                }
+            }
+        },
+        credits: {
+            text: 'skater.com',
+            href: 'http://www.skater.com'
+        },
+
+        xAxis: {
+            categories: {{ categories|safe }}
+        },
+
+        series: [{
+            name: 'Survived',
+            data: {{ survived_series }},
+            color: 'green'
+
+        }, {
+            name: 'Not Survived',
+            data : {{ not_survived_series }},
+            color: 'red'
+        }]
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+/usr/local/lib/python2.7/dist-packages:/usr/local/lib/python3.4/dist-packages:/usr/local/lib/python3.5/dist-packages:/opt/pypy3/lib-python/3:/opt/pypy3/lib_pypy:/home/ubuntu/workspace/venv_pypy/site-packages

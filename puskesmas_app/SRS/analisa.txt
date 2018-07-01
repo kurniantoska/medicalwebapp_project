@@ -1,0 +1,41 @@
+0. Struktur import data fleksibel, kolom, awal baris data,
+dan jumlah data.
+
+1. perhitungan umur bagaimana,
+apakah dihitung berdasar "tanggal sekarang" dikurangi "tanggal lahir"
+ataukah "tanggal periksa" dikurangi "tanggal lahir"
+
+2. Mendapatkan jumlah yang di periksa
+
+3. Cara melakukan upload data
+
+4. Nama - nama puskesmas []
+
+5. Perhitungan range hipertensi : dilihat dari kadar sistol
+
+6. Menghitung IMT:
+   berat badan / tinggi_badan^2 = IMT
+   range _ ada di rekap excel
+
+7. Menghitung gula darah :
+   80 - 144 normal
+   < 80 "HIPOGLIKEMIA"
+   > 144 "HIPERGLIKEMIA"
+
+8. Menghitung Kadar Kolestrol :
+   > 200 hiperkolestrol
+   else : normal
+
+9. Asam Urat :
+   > 7 Tinggi
+   else : normal.
+ext :
+
+10. Fisus Mata,
+   Pending... selasa 26/06/18
+
+11. Satu file dari tiap puskesmas
+
+12. Insight data demografi berdasar di tingkat Kecamatan,
+
+13. 1 Puskesmas itu 1 kecamatan.

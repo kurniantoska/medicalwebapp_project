@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>Data Pemeriksaan</h1>
+    <ul>
+    {% for data in object_list %}
+        <li><a href="{{ data.get_absolute_url }}">{{ data.file_excel}}</a> -
+            {{ data.imported_file}} -
+            {{ data.tanggal_upload}} -
+            {{ data.tanggal_revisi}} </li>
+    {% empty %}
+        <li>No articles yet.</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

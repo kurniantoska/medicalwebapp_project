@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+    {% include 'snippets/nav.html' %}
+{% endblock nav %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">{{ object.file_excel }}</h1>
+
+        </div>
+        <!-- /.col-lg-12 -->
+    <!-- /.start-row2 -->
+        <div class="row">
+            <div class="col-lg-12">
+                        <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3>Petugas upload : {{ object.petugas_puskesmas }}</h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul>
+                                <li>Status Import to DB : {{ object.imported_file}}</li>
+                                <li>Tanggal Upload      : {{ object.tanggal_upload}}</li>
+                                <li>Tanggal Revisi      : {{ object.tanggal_revisi}}</li>
+                            </ul>
+                                <button class="btn btn-danger fa fa-times "> Delete</button>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                    </div>
+        </div>
+    <!-- /.end-row2 -->
+    </div>
+    </div>
+{% endblock content %}
