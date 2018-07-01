@@ -1,10 +1,16 @@
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required, user_passes_test
+
+from django.urls import reverse_lazy
+
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
 from .models import (
     DataPemeriksaan, Puskesmas, Pemeriksaan
 )
@@ -40,6 +46,11 @@ class DataPemeriksaanDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+class DataPemeriksaanDeleteView(DeleteView):
+    model = DataPemeriksaan
+    success_url = reverse_lazy('home')
+
 
 
 # Create your views here.
@@ -153,3 +164,5 @@ def form_handle_eksekusi_import(request):
     #     form = MyForm() # blank form object just to pass context if not post method
     # return render(request, "rr.html", {'form': form})
 
+def registrasi_petugas(request): 
+    pass

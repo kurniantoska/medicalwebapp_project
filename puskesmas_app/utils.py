@@ -1,6 +1,7 @@
 
 from django.conf import settings
 from django.core.exceptions import MultipleObjectsReturned
+from datetime import datetime
 
 from .models import DataPemeriksaan
 
@@ -10,6 +11,16 @@ import numpy as np
 
 from puskesmas_app.models import Pasien, Pemeriksaan, DataPemeriksaan
 
+
+def ubah_timestamp_ke_tanggal(var_timestamp):
+    timestamp_str = str(var_timestamp)
+    timestamp_int = int(timestamp_str[:9])
+    return datetime.fromtimestamp(timestamp_int)
+    
+def ubah_timestamp_ke_tgl_periksa(var_timestamp):
+    timestamp_str = str(var_timestamp)
+    timestamp_int = int(timestamp_str[:10])
+    return datetime.fromtimestamp(timestamp_int)
 
 class EksekusiImportBerkasExcelPasien():
     """untuk melakukan import data dimulai dengan mengisi berkas \n
@@ -84,10 +95,14 @@ class EksekusiImportBerkasExcelPasien():
         data_per_baris = []
         for i in range(jumlah_data):
             try:
-                value_tanggal_lahir = local_tz.localize(import_data_stage2[i][3],
-                                                        is_dst=None)
+                value_tanggal_lahir = import_data_stage2[i][3].date()
             except:
-                value_tanggal_lahir = None
+                tanggal_lahir = import_data_stage2[i][3]
+                if type(tanggal_lahir) == type(1) :
+                    value_tanggal_lahir = ubah_timestamp_ke_tanggal(tanggal_lahir)
+                else :
+                    value_tanggal_lahir = None
+            
             baris = {
                 'no_ktp': import_data_stage2[i][0],
                 'nama_pasien': import_data_stage2[i][1],
@@ -117,13 +132,15 @@ class EksekusiImportBerkasExcelPasien():
         object_pasien = []
         for i in range(len(import_stage_3)):
             # x = None // asli
-            try:
-                nilai_tanggal_lahir = import_stage_3[i]['tanggal_lahir'].date()
-            except:
-                nilai_tanggal_lahir = None
+            # try:
+            #     nilai_tanggal_lahir = import_stage_3[i]['tanggal_lahir'].date()
+            # except:
+            #     nilai_tanggal_lahir = None
+            nilai_tanggal_lahir = import_stage_3[i]['tanggal_lahir']
+            
             try :
                 temp= Pasien.objects.get_or_create(
-                no_ktp = import_stage_3[i]['no_ktp'],
+                no_ktp = (import_stage_3[i]['no_ktp']),
                 nama_pasien= import_stage_3[i]['nama_pasien'],
                 nama_panggilan = import_stage_3[i]['nama_panggilan'],
                 tanggal_lahir = nilai_tanggal_lahir,
@@ -138,8 +155,6 @@ class EksekusiImportBerkasExcelPasien():
                 email = import_stage_3[i]['email'],
                 migrasi_dari_excel = True,
                 )
-                
-            
             except MultipleObjectsReturned :
                 temp= Pasien.objects.filter(
                     no_ktp = import_stage_3[i]['no_ktp'],
@@ -193,6 +208,7 @@ class EksekusiImportBerkasExcelPasien():
         data_tanggal = data.loc[:jumlah_data - 1, 1]
         data_attr = data.loc[:jumlah_data - 1, 14:]
         complete_data_pemeriksaan = pd.concat([data_tanggal, data_attr], axis=1)
+        # complete_data_pemeriksaan[0] = 
         complete_data_pemeriksaan[complete_data_pemeriksaan == 'Tidak'] = 'False'
         complete_data_pemeriksaan[complete_data_pemeriksaan == 'Ya'] = 'True'
         
@@ -245,7 +261,11 @@ class EksekusiImportBerkasExcelPasien():
             try:
                 nilai_tanggal_pemeriksaan = rekam_medis_stage1[1][i].date()
             except:
-                nilai_tanggal_pemeriksaan = None
+                # cek apakah tanggal bernilai dalam bentuk timestamp
+                if type(rekam_medis_stage1[1][i]) == type(1) or type(rekam_medis_stage1[1][i]) == type(np.int64(1)) :
+                    nilai_tanggal_pemeriksaan = ubah_timestamp_ke_tgl_periksa(rekam_medis_stage1[1][i])
+                else :
+                    nilai_tanggal_pemeriksaan = None
             
             try : 
                 nilai_pasien = pasien[i][0]
@@ -318,7 +338,6 @@ class EksekusiImportBerkasExcelPasien():
             self.data_import.imported_file = True
             self.data_import.save()
         return object_pemeriksaan, status_data_duplikat, status_data_berhasil_import
-
 
 
 def group_check(user):

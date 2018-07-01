@@ -17,11 +17,15 @@ Including another URLconf
 from django.urls import path
 
 from . import views
-from .views import DataPemeriksaanListView, DataPemeriksaanDetailView
+from .views import (
+    DataPemeriksaanListView, DataPemeriksaanDetailView,
+    DataPemeriksaanDeleteView,
+    )
 
 app_name = 'puskesmas_app'
 urlpatterns = [
     path('import/', views.import_data, name='import'),
+    path('registrasi_petugas/', views.registrasi_petugas, name='registrasi_petugas'),
     path('penduduk/', views.data_demografi_penduduk, name='penduduk'),
     path('rekapituasi_fr/', views.rekapitulasi_fr, name='rekapitulasi_fr'),
     path('analisa_tabel/', views.analisa_tabel, name='analisa_tabel'),
@@ -31,7 +35,12 @@ urlpatterns = [
     path('data_pemeriksaan/<int:pk>/',
          DataPemeriksaanDetailView.as_view(),
          name='data-pemeriksaan-detail'
+         ),
+    path('data_pemeriksaan/delete/<int:pk>/',
+         DataPemeriksaanDeleteView.as_view(),
+         name='data-pemeriksaan-delete'
          )
+         
 
 
 ]

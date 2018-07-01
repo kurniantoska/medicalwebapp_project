@@ -25,7 +25,7 @@
                                 <li>Tanggal Upload      : {{ object.tanggal_upload}}</li>
                                 <li>Tanggal Revisi      : {{ object.tanggal_revisi}}</li>
                             </ul>
-                                <button class="btn btn-danger fa fa-times "> Delete</button>
+                                <a class="btn btn-danger fa fa-times " href="{{ object.get_absolute_url_delete }}"> Hapus</a>
                         </div>
                         <!-- /.panel-body -->
                     </div>

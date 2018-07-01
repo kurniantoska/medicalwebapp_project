@@ -106,6 +106,9 @@ class DataPemeriksaan(models.Model):
     def get_absolute_url(self):
         return reverse('puskesmas_app:data-pemeriksaan-detail',
                        kwargs={'pk': self.pk})
+    def get_absolute_url_delete(self):
+        return reverse('puskesmas_app:data-pemeriksaan-delete',
+                        kwargs={'pk': self.pk})
 
 # Pasien
 class Pasien(models.Model):
@@ -196,14 +199,14 @@ class Pemeriksaan(models.Model):
     konsumsi_alkohol = models.NullBooleanField()
 
     # Tekanan Darah Pada Pasien
-    sistol = models.CharField(max_length=10, null=True)
-    diastol = models.CharField(max_length=10, null=True)
+    sistol = models.IntegerField(null=True)
+    diastol = models.IntegerField(null=True)
 
     # Indeks Masa Tubuh
-    tinggi_badan = models.CharField(max_length=10, null=True)
-    berat_badan = models.CharField(max_length=10, null=True)
+    tinggi_badan = models.IntegerField(null=True)
+    berat_badan = models.IntegerField(null=True)
 
-    lingkar_perut = models.CharField(max_length=10, null=True)
+    lingkar_perut = models.IntegerField(null=True)
     
     from .static_var import PENGUKURAN_FUNGSI_PARU
     
@@ -212,9 +215,9 @@ class Pemeriksaan(models.Model):
     from .static_var import BENJOLAN_PAYUDARA_CHOICES, IVA_CHOICES
 
     # pemeriksaan lab pada pasien
-    gula = models.CharField(max_length=10, null=True)
-    kolestrol = models.CharField(max_length=10, null=True)
-    trigliserida = models.CharField(max_length=10, null=True)
+    gula = models.IntegerField(null=True)
+    kolestrol = models.IntegerField(null=True)
+    trigliserida = models.IntegerField(null=True)
     benjolan_payudara = models.NullBooleanField(choices=BENJOLAN_PAYUDARA_CHOICES)
     # iva = models.CharField(max_length=10, null=True)
     iva = models.NullBooleanField(choices=IVA_CHOICES)

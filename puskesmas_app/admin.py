@@ -40,7 +40,7 @@ class PasienAdmin(admin.ModelAdmin):
         PemeriksaanInline,
     ]
     list_display = ('nama_pasien', 'gender', 'no_hp',
-                    'pekerjaan', 'dari_file')
+                    'pekerjaan', 'tanggal_lahir', 'dari_file')
 
 
 @admin.register(Pemeriksaan)

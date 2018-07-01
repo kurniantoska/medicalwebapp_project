@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+    {% include 'snippets/nav.html' %}
+{% endblock nav %}
+
+{% block content %}
+<p></p>
+<h3>{{ object.file_excel }}</h3>
+<form method="post">
+    <p>Apakah anda yakin ingin menghapusnya??</p>
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Ya, HAPUS !</button>
+    <a href="{% url 'home' %}" class="btn btn-primary">Cancel</a>
+</form>
+
+{% endblock content %}
