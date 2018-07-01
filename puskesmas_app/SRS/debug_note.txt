@@ -1,0 +1,191 @@
+[['SUPATMIATI'], ['SUPATMIATI'], [Timestamp('1965-04-01 00:00:00')], ['P'], ['Islam'], ['JEMUR GAYUNGAN  I/33'], [nan], ['SLTA'], ['IRT/Tidak Bekerja'], ['Menikah'], ['B'], [nan]]
+
+import pytz
+import datetime
+
+local_tz = pytz.timezone ("Asia/Hong_Kong")
+datetime_without_tz = datetime.datetime.strptime("2015-02-14 12:34:56", "%Y-%m-%d %H:%M:%S")
+datetime_with_tz = local_tz.localize(datetime_without_tz, is_dst=None) # No daylight saving time
+datetime_in_utc = datetime_with_tz.astimezone(pytz.utc)
+
+str1 = datetime_without_tz.strftime('%Y-%m-%d %H:%M:%S %Z')
+str2 = datetime_with_tz.strftime('%Y-%m-%d %H:%M:%S %Z')
+str3 = datetime_in_utc.strftime('%Y-%m-%d %H:%M:%S %Z')
+
+print 'Without Timzone : %s' % (str1)
+print 'With Timezone   : %s' % (str2)
+print 'UTC Datetime    : %s' % (str3)
+----------------------------------------------------
+from puskesmas_app.models import Pasien, Pemeriksaan, DataPemeriksaan
+from puskesmas_app.utils import EksekusiImportBerkasExcelPasien
+
+eksekusi1 = EksekusiImportBerkasExcelPasien()
+
+# eksekusi1.data_import = DataPemeriksaan.objects.first()
+eksekusi1.data_import = DataPemeriksaan.objects.get(file_excel='file_excel_import/dupak_jan_part2.xls')
+
+
+eksekusi1.berkas = eksekusi1.data_import.file_excel.path
+eksekusi1.jumlah_data=421
+import_stage_1 = eksekusi1.baca_data_file_excel()
+import_stage_2 = eksekusi1.data_pasien_tuple_list()
+
+pasien, dup, berhasil = eksekusi1.data_duplikasi_cek_dan_import()
+print(dup, berhasil)
+
+rekam_medis_stage1 = eksekusi1.data_rekam_medis()
+data_pemeriksaan, status_duplikat_data_pemeriksaan, status_berhasil_data_pemeriksaan = eksekusi1.insert_data_pemeriksaan_ke_database(pasien)
+-------------------------------------------------
+
+	tanggal : rekam_medis_stage1[1],
+    pasien : ,
+
+    # Riwayat penyakit Tidak Menular Pada Keluarga
+    diabetes_keluarga : rekam_medis_stage1[15],
+    hipertensi_keluarga : rekam_medis_stage1[16],
+    penyakit_jantung_keluarga : rekam_medis_stage1[17],
+    stroke_keluarga : rekam_medis_stage1[18],
+    asma_keluarga : rekam_medis_stage1[19],
+    kanker_keluarga : rekam_medis_stage1[20],
+    kolestrol_tinggi_keluarga : rekam_medis_stage1[21],
+
+    # Riwayat penyakit Tidak Menular Pada Diri Sendiri
+    diabetes_diri : rekam_medis_stage1[22],
+    hipertensi_diri : rekam_medis_stage1[23],
+    penyakit_jantung_diri : rekam_medis_stage1[24],
+    stroke_diri : rekam_medis_stage1[25],
+    asma_diri : rekam_medis_stage1[26],
+    kanker_diri : rekam_medis_stage1[27],
+    kolestrol_tinggi_diri : rekam_medis_stage1[28],
+
+    # wawancara pada pasien
+    merokok : rekam_medis_stage1[29],
+    kurang_aktifitas_fisik : rekam_medis_stage1[30],
+    kurang_sayur_dan_buah : rekam_medis_stage1[31],
+    konsumsi_alkohol : rekam_medis_stage1[32],
+
+    # Tekanan Darah Pada Pasien
+    sistol : rekam_medis_stage1[33],
+    diastol : rekam_medis_stage1[34],
+
+    # Indeks Masa Tubuh
+    tinggi_badan : rekam_medis_stage1[35],
+    berat_badan : rekam_medis_stage1[36],
+
+    lingkar_perut : rekam_medis_stage1[37],
+    pengukuran_fungsi_paru : rekam_medis_stage1[38],
+
+    # pemeriksaan lab pada pasien
+    gula : rekam_medis_stage1[39],
+    kolestrol : rekam_medis_stage1[40],
+    trigliserida : rekam_medis_stage1[41],
+    benjolan_payudara : rekam_medis_stage1[42],
+    iva : rekam_medis_stage1[43],
+    kadar_alkohol_pernapasan : rekam_medis_stage1[44],
+    tes_amfetamin_urin : rekam_medis_stage1[45],
+
+    # penyuluhan
+    penyuluhan_iva_and_cbe : rekam_medis_stage1[46],
+    penyuluhan_rokok : rekam_medis_stage1[47],
+    penyuluhan_potensi_cedera : rekam_medis_stage1[48],
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------------------------------------------------
+
+eksekusi1.data_import = DataPemeriksaan.objects.get(file_excel__iexact='x.xlsx')
+eksekusi1.data_import = DataPemeriksaan.objects.first()
+
+for i in range(len(import_stage_3)):
+	pasien1 = None
+	pasien1 = Pasien()
+	pasien1 = Pasien(
+		no_ktp 				= import_stage_3[i]['no_ktp'],
+		nama_pasien 		= import_stage_3[i]['nama_pasien'],
+		nama_panggilan 		= import_stage_3[i]['nama_panggilan'],
+		tanggal_lahir 		= import_stage_3[i]['tanggal_lahir'].date(),
+		gender 				= import_stage_3[i]['jenis_kelamin'],
+		agama 				= import_stage_3[i]['agama'],
+		alamat 				= import_stage_3[i]['alamat'],
+		no_hp 				= import_stage_3[i]['no_hp'],
+		pendidikan_terakhir = import_stage_3[i]['pendidikan_terakhir'],
+		pekerjaan 			= import_stage_3[i]['pekerjaan'],
+		status 				= import_stage_3[i]['status'],
+		golongan_darah 		= import_stage_3[i]['golongan_darah'],
+		email 				= import_stage_3[i]['email'],
+		migrasi_dari_excel	= True,
+		dari_file			= str(eksekusi1.berkas),
+	)
+	pasien1.save()
+
+-------------------------------------------------------
+
+pasien3 = Pasien(
+	no_ktp 				= import_stage_3[3]['no_ktp'],
+	nama_pasien 		= import_stage_3[3]['nama_pasien'],
+	nama_panggilan 		= import_stage_3[3]['nama_panggilan'],
+	tanggal_lahir 		= import_stage_3[3]['tanggal_lahir'].date(),
+	gender 				= import_stage_3[3]['jenis_kelamin'],
+	agama 				= import_stage_3[3]['agama'],
+	alamat 				= import_stage_3[3]['alamat'],
+	no_hp 				= import_stage_3[3]['no_hp'],
+	pendidikan_terakhir = import_stage_3[3]['pendidikan_terakhir'],
+	pekerjaan 			= import_stage_3[3]['pekerjaan'],
+	status 				= import_stage_3[3]['status'],
+	golongan_darah 		= import_stage_3[3]['golongan_darah'],
+	email 				= import_stage_3[3]['email'],
+)
+
+-------------------------------------------------------
+
+from django.utils.dateparse import parse_datetime
+import_data_stage2[0][3][0].astime
+
+
+
+
+no_ktp	= import_data_stage2[0][0][0]
+nama_pasien	= import_data_stage2[0][1][0]
+nama_panggilan	= import_data_stage2[0][2][0]
+tanggal_lahir = import_data_stage2[0][3][0]
+jenis_kelamin = import_data_stage2[0][4][0]
+agama = import_data_stage2[0][5][0]
+alamat = import_data_stage2[0][6][0]
+no_hp = import_data_stage2[0][7][0]
+pendidikan_terakhir	= import_data_stage2[0][8][0]
+pekerjaan = import_data_stage2[0][9][0]
+status = import_data_stage2[0][10][0]
+golongan_darah = import_data_stage2[0][11][0]
+email = import_data_stage2[0][12][0]
+
+
+
+
+
+pasien1.no_ktp = import_stage_3['no_ktp']
+pasien1.nama_pasien = import_stage_3['nama_pasien']
+pasien1.nama_panggilan = import_stage_3['nama_panggilan']
+pasien1.tanggal_lahir = import_stage_3['tanggal_lahir']
+pasien1.jenis_kelamin = import_stage_3['jenis_kelamin']
+pasien1.agama = import_stage_3['agama']
+pasien1.alamat = import_stage_3['alamat']
+pasien1.no_hp = import_stage_3['no_hp']
+pasien1.pendidikan_terakhir = import_stage_3['pendidikan_terakhir']
+pasien1.pekerjaan = import_stage_3['pekerjaan']
+pasien1.status = import_stage_3['status']
+pasien1.golongan_darah = import_stage_3['golongan_darah']
+pasien1.email = import_stage_3['email']
+

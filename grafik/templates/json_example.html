@@ -1,0 +1,23 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django Highcharts Example JSON Response</title>
+</head>
+<body>
+<div id="container" data-url="{% url 'grafik:chart_data' %}"></div>
+<script src="{% static 'vendor/hc_dir/highcharts.src.js' %}"></script>
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script>
+    $.ajax({
+        url:$("#container").attr("data-url"),
+        dataType: 'json',
+        success: function (data) {
+            Highcharts.chart("container", data);
+        }
+    });
+</script>
+
+</body>
+</html>

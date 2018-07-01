@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+{% block title %}Import Data{% endblock title %}
+{% block css %}
+    <link href="{% static 'vendor/datatables-plugins/dataTables.bootstrap.css'%}" rel="stylesheet" />
+    <link href="{% static 'vendor/datatables-responsive/dataTables.responsive.css'%}" rel="stylesheet" />
+{% endblock css %}
+{% block nav %}
+    {% include 'snippets/nav.html' %}
+{% endblock nav %}
+{% block content %}
+        <!-- Page Content -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">Import Data</h1>
+                    </div>
+                    <!-- /.col-lg-12 -->
+                </div>
+                <!-- /.row -->
+
+                <!-- /.start-row2 -->
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="panel panel-default">
+                        <div class="panel-heading">
+                            1. Unggah Berkas Format Excel
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <form method="POST" class="post-form" enctype="multipart/form-data" id="form" name="form">{% csrf_token %}
+                                    {{ form | crispy}}
+                                    <button type="submit" class="save btn btn-primary" name="btn_form">Unggah</button>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                    </div>
+                    <!-- /.col-lg-12 -->
+                    <div class="col-lg-6">
+                        <div class="panel panel-default">
+                        <div class="panel-heading">
+                            2. Import Basisdata
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <form method="POST" class="post-form" id="form_2" name="form_2">{% csrf_token %}
+                                    {{ form_2 | crispy }}
+                                    <button type="submit" class="save btn btn-primary" name="btn_form_2">Import</button>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                    </div>
+                </div>
+                <!-- /.end-row2 -->
+
+
+
+
+                <!-- /.start-row3 -->
+
+                <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Daftar Berkas Excel
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th>Petugas Puskesmas</th>
+                                        <th>Berkas</th>
+                                        <th>Status</th>
+                                        <th>Upload</th>
+                                        <th>Revisi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for data in dataPemeriksaanObject %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ data.get_absolute_url }}">
+                                                {{ data.petugas_puskesmas }}
+                                            </a>
+                                        </td>
+                                        <td>{{ data.file_excel }}</td>
+                                        <td>{{ data.imported_file }}</td>
+                                        <td>{{ data.tanggal_upload | date:"H:i:s - d M y" }} </td>
+                                        <td>{{ data.tanggal_revisi }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <!-- /.table-responsive -->
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+
+                <!-- /.end-row3 -->
+
+            </div>
+            <!-- /.container-fluid -->
+        <!-- /#page-wrapper -->
+{%  endblock content %}
+{% block javascript %}
+    <!-- DataTables JavaScript -->
+    <script src="{% static 'vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'vendor/datatables-plugins/dataTables.bootstrap.min.js' %}"></script>
+    <script src="{% static 'vendor/datatables-responsive/dataTables.responsive.js' %}"></script>
+    <script>
+    $(document).ready(function() {
+        $('#dataTables-example').DataTable({
+            responsive: true,
+            "order": [[ 3, 'desc' ]]
+        });
+    });
+    </script>
+{% endblock javascript %}
+
+{% block footer_inside %}
+    {% include 'snippets/footer.html' %}
+{% endblock footer_inside %}

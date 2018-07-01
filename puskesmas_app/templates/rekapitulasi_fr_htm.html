@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Rekapitulasi Faktor Resiko{% endblock title %}
+{% block nav %}
+    {% include 'snippets/nav.html' %}
+{% endblock nav %}
+{% block content %}
+        <!-- Page Content -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">Rekapitulasi Faktor Risiko PTM</h1>
+                    </div>
+                    <!-- /.col-lg-12 -->
+                </div>
+                <!-- /.row -->
+
+                <!-- /.start-row2 -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Unggah Berkas
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label>Pilih Berkas</label>
+                                <input type="file">
+                            </div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                    </div>
+                    <!-- /.col-lg-12 -->
+                </div>
+                <!-- /.end-row2 -->
+            </div>
+            <!-- /.container-fluid -->
+        <!-- /#page-wrapper -->
+{%  endblock content %}
+{% block footer_inside %}
+    {% include 'snippets/footer.html' %}
+{% endblock footer_inside %}
