@@ -164,19 +164,6 @@ def rekapitulasi_fr(request):
     a_list = ['merokok', 'kurang_aktifitas_fisik', 'kurang_sayur_dan_buah',
               'konsumsi_alkohol', 'benjolan_payudara', 'iva',]
               
-              
-    qs = Pemeriksaan.objects.filter(date_check__year=a_year)
-
-    for item in a_list :
-        data = qs.aggregate(
-            p1=Count('pk', filter=Q(**{item: True})),
-    		p2=Count('pk', filter=Q(**{item: False})),
-            p3=Count('pk', filter=Q(**{item: None})),
-        )
-        jumlah_yg[item] = data['p1'] or 0
-        jumlah_yg_tidak[item] = data['p2'] or 0
-        jumlah_tdk_diperiksa[item] = data['p3'] or 0
-
     context = {
         'daftar_faktor_resiko' : daftar_faktor_resiko,
     }
