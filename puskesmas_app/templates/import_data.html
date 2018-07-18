@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 {% block title %}Import Data{% endblock title %}
@@ -10,6 +11,7 @@
     {% include 'snippets/nav.html' %}
 {% endblock nav %}
 {% block content %}
+
         <!-- Page Content -->
             <div class="container-fluid">
                 <div class="row">
@@ -123,7 +125,23 @@
     $(document).ready(function() {
         $('#dataTables-example').DataTable({
             responsive: true,
-            "order": [[ 3, 'desc' ]]
+            "order": [[ 3, 'desc' ]],
+            "language": {
+                "lengthMenu": "Menampilkan _MENU_ entri per halaman",
+                "zeroRecords": "Kosong - maaf",
+                "info": "Menampilkan halaman _PAGE_ of _PAGES_",
+                "infoEmpty": "Tidak ada entri tersedia",
+                "infoFiltered": "(disaring dari _MAX_ total entri)",
+                "sInfoPostFix":  "",
+                "sSearch":       "Cari:",
+                "sUrl":          "",
+                "oPaginate": {
+                    "sFirst":    "Pertama",
+                    "sPrevious": "Sebelumnya",
+                    "sNext":     "Selanjutnya",
+                    "sLast":     "Terakhir"
+                }
+            },
         });
     });
     </script>

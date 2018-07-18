@@ -6,6 +6,10 @@ from django.core.validators import (
     MinValueValidator, MaxValueValidator
 )
 
+from django.db.models import Count
+from django.db.models import Q
+
+
 from calendar import day_name
 # import locale
 #
@@ -167,12 +171,20 @@ class Rekam_medis(models.Model):
     pemeriksaan = models.CharField(max_length=200)
     diagnosa = models.TextField()
 
+# manager untuk class pemeriksaan
+# class MerokokManajer(models.Manager):
+#     def get_queryset(self):
+#         jumlah_yang_merokok = super().get_queryset().filter(merokok=True)
+#         return super().get_queryset().filter(merokok=True)
+
+
 # database asli
 class Pemeriksaan(models.Model):
     dari_file = models.ForeignKey(DataPemeriksaan, on_delete=models.CASCADE)
     migrasi_dari_excel = models.BooleanField(default=False)
     tanggal = models.DateField(null=True)
     pasien = models.ForeignKey(Pasien, on_delete=models.CASCADE, null=True)
+    umur = models.IntegerField(null=True)
 
     # Riwayat penyakit Tidak Menular Pada Keluarga
     diabetes_keluarga = models.NullBooleanField()
@@ -231,6 +243,9 @@ class Pemeriksaan(models.Model):
     penyuluhan_rokok = models.NullBooleanField(choices=PENYULUHAN_CHOICES)
     penyuluhan_potensi_cedera = models.NullBooleanField(choices=PENYULUHAN_CHOICES)
 
+    # ext
+    indeks_masa_tubuh = models.FloatField (null=True)
+    
     # tambahan
     
     from .static_var import NORMAL_ABNORMAL
@@ -241,18 +256,75 @@ class Pemeriksaan(models.Model):
     
     def __str__(self):
         return "{}, {}".format(self.tanggal, self.pasien.nama_pasien)
+        
+    # only for a_list = ['merokok', 'kurang_aktifitas_fisik', 
+    # 'kurang_sayur_dan_buah', 'konsumsi_alkohol', 
+    # 'benjolan_payudara', 'iva',]
+    @staticmethod
+    def qs_model_rekapitulasi(tahun:int, item:str):
+        qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
+        data = qs.aggregate(
+            p_true=Count('pk', filter=Q(**{item: True})),
+            p_false=Count('pk', filter=Q(**{item: False})),
+            p_none=Count('pk', filter=Q(**{item: None})),
+            )
+        return (data['p_true'] or 0, 
+                data['p_false'] or 0,
+                data['p_none'] or 0,
+                )
+    
+    @staticmethod
+    def get_jumlah_beresiko_dan_diperiksa(tahun:int, item:str):
+        if item == 'tekanan_darah' :
+            qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
+            data = qs.aggregate(
+                p_true=Count('pk', filter=Q(sistol__gt = 140)),
+                p_false=Count('pk', filter=Q(sistol__lte = 140)),
+                p_none=Count('pk', filter=Q(sistol = None)),
+            )
+            _ = (data['p_true'] or 0, data['p_false'] or 0, data['p_none'] or 0,)
+        
+        if item == 'imt' :
+            qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
+            data = qs.aggregate(
+                p_true=Count('pk', filter=Q(imt__gt = 25)),
+                p_false=Count('pk', filter=Q(sistol__lte = 140)),
+                p_none=Count('pk', filter=Q(sistol = None)),
+            )
+            _ = (data['p_true'] or 0, data['p_false'] or 0, data['p_none'] or 0,)
+        
+        else :
+            _ = Pemeriksaan.qs_model_rekapitulasi(tahun, item)
+        
+        jumlah_beresiko = _[0]
+        jumlah_yang_diperiksa = _[0] + _[1]
+        return (jumlah_beresiko, jumlah_yang_diperiksa)
 
-    def get_jumlah_yang_di_periksa(self):
-        return Pemeriksaan.objects.count()
-
-    def get_jumlah_yang_diperiksa_merokok(self):
-        return Pemeriksaan.get_jumlah_yang_di_periksa() - Pemeriksaan.objects.filter(merokok=None).count()
-
-    def get_jumlah_yang_diperiksa_kurang_aktifitas_fisik(self):
-        return Pemeriksaan.get_jumlah_yang_di_periksa() - Pemeriksaan.objects.filter(kurang_aktifitas_fisik=None).count()
-
-
-
+    # def save(self, *args, **kwargs):
+    #     # Check how the current values differ from ._loaded_values. For example,
+    #     # prevent changing the creator_id of the model. (This example doesn't
+    #     # support cases where 'creator_id' is deferred).
+    #     if not self._state.adding and (
+    #             self.creator_id != self._loaded_values['creator_id']):
+    #         raise ValueError("Updating the value of creator isn't allowed")
+    #     super().save(*args, **kwargs)
+    
+    def save(self, *args, **kwargs):
+        if (self.berat_badan is not None) and (self.tinggi_badan is not None):
+            # self.first_char for referencing to the current object
+            imt = (self.berat_badan / self.tinggi_badan**2) * 100**2
+            imt = round(imt, 2)
+            self.indeks_masa_tubuh = imt
+        else :
+            self.indeks_masa_tubuh = None
+        
+        if (self.pasien.tanggal_lahir is not None) and (self.tanggal is not None):
+            umur = self.tanggal.date().year - self.pasien.tanggal_lahir.year
+            self.umur = umur
+        else :
+            umur = None
+        super().save(*args, **kwargs)
+    
 
 # user petugas dinas kota
 class PetugasDinasKota(models.Model):
@@ -272,8 +344,7 @@ class DemografiPenduduk(models.Model):
             validators=[
             MinValueValidator(2015),
             MaxValueValidator(timezone.now().date().year)],
-            help_text="Gunakan Format Tahun: <YYYY>",
-            choices= YEAR_CHOICES,
+            choices= YEAR_CHOICES, unique=True
             )
 
     u15_19_laki_laki = models.IntegerField()

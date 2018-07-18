@@ -19,7 +19,7 @@ from django.urls import path
 from . import views
 from .views import (
     DataPemeriksaanListView, DataPemeriksaanDetailView,
-    DataPemeriksaanDeleteView,
+    DataPemeriksaanDeleteView, DemografiPendudukCreateView
     )
 
 app_name = 'puskesmas_app'
@@ -27,6 +27,7 @@ urlpatterns = [
     path('import/', views.import_data, name='import'),
     path('registrasi_petugas/', views.registrasi_petugas, name='registrasi_petugas'),
     path('penduduk/', views.data_demografi_penduduk, name='penduduk'),
+    path('penduduk_create/', DemografiPendudukCreateView.as_view(), name='penduduk_cr'),
     path('rekapituasi_fr/', views.rekapitulasi_fr, name='rekapitulasi_fr'),
     path('analisa_tabel/', views.analisa_tabel, name='analisa_tabel'),
     path('analisa_grafik/', views.analisa_grafik, name='analisa_grafik'),

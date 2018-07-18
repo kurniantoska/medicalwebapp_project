@@ -2,6 +2,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required, user_passes_test
 
+from django.db.models import Count
+from django.db.models import Q
+
+
 from django.urls import reverse_lazy
 
 from django.utils.decorators import method_decorator
@@ -12,12 +16,13 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from .models import (
-    DataPemeriksaan, Puskesmas, Pemeriksaan
+    DataPemeriksaan, Puskesmas, Pemeriksaan,
+    DemografiPenduduk,
 )
 
 
 from .forms import (
-    DataPemeriksaanForm, ImportFileExcelForm,
+    DataPemeriksaanForm, ImportFileExcelForm, DemografiPendudukForm
 )
 
 from .utils import EksekusiImportBerkasExcelPasien
@@ -124,12 +129,58 @@ def import_data(request):
     return render(request, template, context)
 
 def data_demografi_penduduk(request):
-    context = locals()
+    form = DemografiPendudukForm()
+    if request.POST :
+        form = DemografiPendudukForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+            
+        
+    context = {
+        'form' : form,
+    }
     template = 'data_demografi_penduduk_htm.html'
     return render(request, template, context)
 
 def rekapitulasi_fr(request):
-    context = locals()
+    daftar_faktor_resiko = (
+        'Merokok',
+        'Kurang Aktivitas',
+        'Kurang Konsumsi Sayur dan Buah',
+        'Konsumsi Alkohol',
+        'Tekanan Darah',
+        'Indeks Masa Tubuh',
+        'Gula Darah',
+        'Lingkar Perut',
+        'Kolesterol',
+        'Trigliserida',
+        'Benjolan Payudara',
+        'IVA',
+        'Kadar Alkohol Pernafasan',
+        'Amfetamin Urin',
+    )
+    
+    a_list = ['merokok', 'kurang_aktifitas_fisik', 'kurang_sayur_dan_buah',
+              'konsumsi_alkohol', 'benjolan_payudara', 'iva',]
+              
+              
+    qs = Pemeriksaan.objects.filter(date_check__year=a_year)
+
+    for item in a_list :
+        data = qs.aggregate(
+            p1=Count('pk', filter=Q(**{item: True})),
+    		p2=Count('pk', filter=Q(**{item: False})),
+            p3=Count('pk', filter=Q(**{item: None})),
+        )
+        jumlah_yg[item] = data['p1'] or 0
+        jumlah_yg_tidak[item] = data['p2'] or 0
+        jumlah_tdk_diperiksa[item] = data['p3'] or 0
+
+    context = {
+        'daftar_faktor_resiko' : daftar_faktor_resiko,
+    }
+    
     template = 'rekapitulasi_fr_htm.html'
     return render(request, template, context)
 
@@ -166,3 +217,41 @@ def form_handle_eksekusi_import(request):
 
 def registrasi_petugas(request): 
     pass
+
+
+class AjaxableResponseMixin:
+    """
+    Mixin to add AJAX support to a form.
+    Must be used with an object-based FormView (e.g. CreateView)
+    """
+    def form_invalid(self, form):
+        response = super().form_invalid(form)
+        if self.request.is_ajax():
+            return JsonResponse(form.errors, status=400)
+        else:
+            return response
+
+    def form_valid(self, form):
+        # We make sure to call the parent's form_valid() method because
+        # it might do some processing (in the case of CreateView, it will
+        # call form.save() for example).
+        response = super().form_valid(form)
+        if self.request.is_ajax():
+            data = {
+                'pk': self.object.pk,
+            }
+            return JsonResponse(data)
+        else:
+            return response
+            
+            
+class DemografiPendudukCreateView(AjaxableResponseMixin, CreateView):
+    model = DemografiPenduduk
+    fields = '__all__'
+    template_name = 'data_demografi_penduduk_htm.html'
+    
+    
+    
+    
+    
+    

@@ -1,0 +1,73 @@
+tahun = 2018
+jumlah_yg_merokok = Pemeriksaan.objects.filter(tanggal__year = tahun, merokok = True).count()
+jumlah_yg_tdk_merokok = Pemeriksaan.objects.filter(tanggal__year = tahun, merokok = False).count()
+pasien_yang_diperiksa_db_merokok = jumlah_yg_merokok + jumlah_yg_tdk_merokok
+pasien_yang_tdk_di_periksa_db_merokok = Pemeriksaan.objects.filter(tanggal__year = tahun, merokok = None).count()
+
+
+
+   jumlah_yg_[item] = Pemeriksaan.objects.filter(tanggal__year = tahun, item = True).count()
+   jumlah_yg_tdk_[item] = Pemeriksaan.objects.filter(tanggal__year = tahun, item = False).count()
+   pasien_yang_diperiksa_db_[item] = jumlah_yg_[item] + jumlah_yg_tdk_[item]
+   pasien_yang_tdk_di_periksa_db_[item] = Pemeriksaan.objects.filter(tanggal__year = tahun, item = None).count()
+
+jumlah_yg_ = dict()                                                                                                                                                                                                                            
+jumlah_yg_tdk_ = dict()                                                                                                                                                                                                                        
+pasien_yang_diperiksa_db_ = dict()                                                                                                                                                          
+pasien_yang_tdk_di_periksa_db_ = dict()
+
+from django.db.models import Q
+
+
+-------------------------
+Merokok
+Kurang Aktivitas
+Kurang Konsumsi Sayur dan Buah
+Konsumsi Alkohol
+Tekanan Darah
+Indeks Masa Tubuh
+Gula Darah
+Lingkar Perut
+Kolesterol
+Trigliserida
+Benjolan Payudara
+IVA
+Kadar Alkohol Pernafasan
+Amfetamin Urin
+
+merokok [ya, tidak | True, False, None]
+kurang_aktifitas_fisik [ya, tidak | True, False, None]
+kurang_sayur_dan_buah [ya, tidak | True, False, None]
+konsumsi_alkohol [ya, tidak | True, False, None]
+
+sistol
+diastol
+
+tinggi_badan
+berat_badan
+
+gula
+kolestrol
+trigliserida
+benjolan_payudara [temukan, tidak_ditemukan | True, False, None]
+iva [positif, negatif, kosong, | True, False, None]
+
+------------------------------------
+list db
+
+'merokok',
+'kurang_aktifitas_fisik',
+'kurang_sayur_dan_buah',
+'konsumsi_alkohol',
+'benjolan_payudara',
+'iva',
+
+
+
+
+
+
+
+
+
+

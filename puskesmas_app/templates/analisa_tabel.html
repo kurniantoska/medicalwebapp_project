@@ -787,7 +787,23 @@
     <script>
     $(document).ready(function() {
         $('#dataTables-example').DataTable({
-            responsive: true
+            responsive: true,
+            "language": {
+                "lengthMenu": "Menampilkan _MENU_ entri per halaman",
+                "zeroRecords": "Kosong - maaf",
+                "info": "Menampilkan halaman _PAGE_ of _PAGES_",
+                "infoEmpty": "Tidak ada entri tersedia",
+                "infoFiltered": "(disaring dari _MAX_ total entri)",
+                "sInfoPostFix":  "",
+                "sSearch":       "Cari:",
+                "sUrl":          "",
+                "oPaginate": {
+                    "sFirst":    "Pertama",
+                    "sPrevious": "Sebelumnya",
+                    "sNext":     "Selanjutnya",
+                    "sLast":     "Terakhir"
+                }
+            },
         });
     });
     </script>

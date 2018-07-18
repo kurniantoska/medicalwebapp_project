@@ -47,9 +47,10 @@ class PasienAdmin(admin.ModelAdmin):
 class PemeriksaanAdmin(admin.ModelAdmin):
     # list_display = ('tanggal', 'pasien', 'dari_file',
     #                 'migrasi_dari_excel')
+    list_filter = ('dari_file', 'merokok')
     actions_on_top = True
     list_display = [field.name for field in Pemeriksaan._meta.get_fields()]
-    list_filter = ('dari_file',)
+    
 
 
 
