@@ -47,9 +47,14 @@ class PasienAdmin(admin.ModelAdmin):
 class PemeriksaanAdmin(admin.ModelAdmin):
     # list_display = ('tanggal', 'pasien', 'dari_file',
     #                 'migrasi_dari_excel')
-    list_filter = ('dari_file', 'merokok')
+    list_filter = ('dari_file', 'merokok', 'tanggal')
     actions_on_top = True
     list_display = [field.name for field in Pemeriksaan._meta.get_fields()]
+    
+    def save_model(self, request, obj, form, change):
+        if getattr(obj, 'umur', None) is None:
+            obj.umur = obj.tanggal.date().year - obj.pasien.tanggal_lahir.year
+        obj.save()
     
 
 

@@ -162,7 +162,12 @@ def rekapitulasi_fr(request):
     )
     
     a_list = ['merokok', 'kurang_aktifitas_fisik', 'kurang_sayur_dan_buah',
-              'konsumsi_alkohol', 'benjolan_payudara', 'iva',]
+              'konsumsi_alkohol', 'tekanandarah', 'imt',
+              'gula_darah', 'lingkar_perut', 'kolestrol',
+              'asamurat', 'benjolan_payudara', 'iva', 
+              'kadar_alkohol_pernapasan', 'amfetamin_urin']
+    
+    
               
     context = {
         'daftar_faktor_resiko' : daftar_faktor_resiko,

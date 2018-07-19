@@ -1,4 +1,7 @@
 from django.db import models
+from django.db.models import Count
+from django.db.models import Q
+
 # from django.conf import settings
 from django.utils import timezone
 from django.urls import reverse
@@ -6,9 +9,9 @@ from django.core.validators import (
     MinValueValidator, MaxValueValidator
 )
 
-from django.db.models import Count
-from django.db.models import Q
+from django.utils import timezone
 
+from dateutil.relativedelta import relativedelta
 
 from calendar import day_name
 # import locale
@@ -143,6 +146,12 @@ class Pasien(models.Model):
 
     def __str__(self):
         return "{} - {}".format(self.nama_pasien, self.no_ktp)
+        
+    def get_umur(self):
+        if self.tanggal_lahir :
+            return relativedelta(timezone.now().date(), self.tanggal_lahir).years
+        else:
+            return None
 
 class Resep(models.Model):
     nama_obat = models.CharField(max_length=50)
@@ -256,6 +265,7 @@ class Pemeriksaan(models.Model):
     
     def __str__(self):
         return "{}, {}".format(self.tanggal, self.pasien.nama_pasien)
+
         
     # only for a_list = ['merokok', 'kurang_aktifitas_fisik', 
     # 'kurang_sayur_dan_buah', 'konsumsi_alkohol', 
@@ -264,9 +274,10 @@ class Pemeriksaan(models.Model):
     def qs_model_rekapitulasi(tahun:int, item:str):
         qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
         data = qs.aggregate(
-            p_true=Count('pk', filter=Q(**{item: True})),
-            p_false=Count('pk', filter=Q(**{item: False})),
-            p_none=Count('pk', filter=Q(**{item: None})),
+            # menggunakan parameter distinct untuk menghilangkan duplikasi
+            p_true=Count('pasien', filter=Q(**{item: True}), distinct=True),
+            p_false=Count('pasien', filter=Q(**{item: False}), distinct=True),
+            p_none=Count('pasien', filter=Q(**{item: None}), distinct=True),
             )
         return (data['p_true'] or 0, 
                 data['p_false'] or 0,
@@ -275,23 +286,56 @@ class Pemeriksaan(models.Model):
     
     @staticmethod
     def get_jumlah_beresiko_dan_diperiksa(tahun:int, item:str):
-        if item == 'tekanan_darah' :
-            qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
-            data = qs.aggregate(
-                p_true=Count('pk', filter=Q(sistol__gt = 140)),
-                p_false=Count('pk', filter=Q(sistol__lte = 140)),
-                p_none=Count('pk', filter=Q(sistol = None)),
-            )
-            _ = (data['p_true'] or 0, data['p_false'] or 0, data['p_none'] or 0,)
+        """mendapatkan jumlah pemeriksaan dari item untuk keperluan 
+        output pada halaman rekapitulasi_fr
+        dengan return (jumlah_beresiko, jumlah_yang_diperiksa)"""
         
-        if item == 'imt' :
+        
+        if item == 'tekanandarah' :
             qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
             data = qs.aggregate(
-                p_true=Count('pk', filter=Q(imt__gt = 25)),
-                p_false=Count('pk', filter=Q(sistol__lte = 140)),
-                p_none=Count('pk', filter=Q(sistol = None)),
+                p_true=Count('pasien', filter=Q(sistol__gt = 140), distinct=True),
+                p_false=Count('pasien', filter=Q(sistol__lte = 140), distinct=True),
+                p_none=Count('pasien', filter=Q(sistol = None), distinct=True),
             )
-            _ = (data['p_true'] or 0, data['p_false'] or 0, data['p_none'] or 0,)
+            _ = (data['p_true'] or 0, 
+                data['p_false'] or 0, 
+                data['p_none'] or 0,)
+        
+        elif item == 'asamurat' :
+            qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
+            data = qs.aggregate(
+                p_true=Count('pasien', filter=Q(trigliserida__gt = 7), distinct=True),
+                p_false=Count('pasien', filter=Q(trigliserida__lte = 7), distinct=True),
+                p_none=Count('pasien', filter=Q(trigliserida = None), distinct=True),
+            )
+            _ = (data['p_true'] or 0, 
+                data['p_false'] or 0, 
+                data['p_none'] or 0,)
+        
+        
+        elif item == 'kolestrol' :
+            qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
+            data = qs.aggregate(
+                p_true=Count('pasien', filter=Q(kolestrol__gt = 200), distinct=True),
+                p_false=Count('pasien', filter=Q(kolestrol__lte = 200), distinct=True),
+                p_none=Count('pasien', filter=Q(sistol = None), distinct=True),
+            )
+            _ = (data['p_true'] or 0, 
+                data['p_false'] or 0, 
+                data['p_none'] or 0,)
+        
+        
+        elif item == 'imt' :
+            qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
+            data = qs.aggregate(
+                p_true=Count('pasien', filter=Q(indeks_masa_tubuh__gt = 25), distinct=True),
+                p_false=Count('pasien', filter=Q(indeks_masa_tubuh__lte = 25), distinct=True),
+                p_none=Count('pasien', filter=Q(indeks_masa_tubuh = None), distinct=True),
+            )
+            _ = (data['p_true'] or 0, 
+                data['p_false'] or 0, 
+                data['p_none'] or 0,)
         
         else :
             _ = Pemeriksaan.qs_model_rekapitulasi(tahun, item)
@@ -319,7 +363,7 @@ class Pemeriksaan(models.Model):
             self.indeks_masa_tubuh = None
         
         if (self.pasien.tanggal_lahir is not None) and (self.tanggal is not None):
-            umur = self.tanggal.date().year - self.pasien.tanggal_lahir.year
+            umur = self.tanggal.year - self.pasien.tanggal_lahir.year
             self.umur = umur
         else :
             umur = None
