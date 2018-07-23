@@ -144,6 +144,18 @@ def data_demografi_penduduk(request):
     return render(request, template, context)
 
 def rekapitulasi_fr(request):
+    tahun = 2018
+    
+    
+    if request.method == "POST" :
+        selection = request.POST.get('id',None) 
+        if selection:
+            selected_year = 2018
+            return selected_year
+        else:
+            return
+    
+    # list untuk tampilan di template
     daftar_faktor_resiko = (
         'Merokok',
         'Kurang Aktivitas',
@@ -161,14 +173,21 @@ def rekapitulasi_fr(request):
         'Amfetamin Urin',
     )
     
+    # list untuk referensi data filter di ORM
     a_list = ['merokok', 'kurang_aktifitas_fisik', 'kurang_sayur_dan_buah',
               'konsumsi_alkohol', 'tekanandarah', 'imt',
-              'gula_darah', 'lingkar_perut', 'kolestrol',
+              'gula', 'lingkar_perut', 'kolestrol',
               'asamurat', 'benjolan_payudara', 'iva', 
               'kadar_alkohol_pernapasan', 'amfetamin_urin']
     
+    # simpan nilai ke dalam variabel rekap, nilai kunjungan yang beresiko dan
+    # jumlah yang diperiksa
+    rekap = [Pemeriksaan.get_jumlah_beresiko_dan_diperiksa(tahun, x) for x in a_list ]
     
-              
+    # menyatukan var rekap dan daftar_faktor_resiko kedalam satu bagian
+    # sehingga mudah untuk di panggil saat di template
+    daftar_faktor_resiko = tuple(zip(daftar_faktor_resiko, rekap))
+    
     context = {
         'daftar_faktor_resiko' : daftar_faktor_resiko,
     }

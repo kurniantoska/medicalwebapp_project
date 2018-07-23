@@ -189,3 +189,5 @@ pasien1.status = import_stage_3['status']
 pasien1.golongan_darah = import_stage_3['golongan_darah']
 pasien1.email = import_stage_3['email']
 
+______________________________________________________________________________________
+query = reduce(or_, (Q(dari_file__petugas_puskesmas__puskesmas__kecamatan_kelurahan = x) for x in all_kelurahan_in_lakasantri)

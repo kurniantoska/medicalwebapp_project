@@ -314,6 +314,20 @@ class Pemeriksaan(models.Model):
                 data['p_none'] or 0,)
         
         
+        elif item == 'gula' :
+            qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
+            data = qs.aggregate(
+                p_true=Count('pasien', filter=Q(gula__lt = 80) | Q(gula__gt = 144), distinct=True),
+                p_false=Count('pasien', filter=Q(gula__gt = 80, gula__lt = 144), distinct=True),
+                p_none=Count('pasien', filter=Q(gula = None), distinct=True),
+            )
+            _ = (data['p_true'] or 0, 
+                data['p_false'] or 0, 
+                data['p_none'] or 0,)
+        
+        elif item == 'amfetamin_urin':
+            _ = (0, 0)
+        
         elif item == 'kolestrol' :
             qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
             data = qs.aggregate(

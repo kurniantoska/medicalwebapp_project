@@ -39,3 +39,35 @@ ext :
 12. Insight data demografi berdasar di tingkat Kecamatan,
 
 13. 1 Puskesmas itu 1 kecamatan.
+
+
+
+-------------------------------------
+puskesmas, 
+rentang tanggal,
+Jenis : 
+   Wilayah
+   Jenis Kelamin
+   Usia
+   Waktu
+
+Pemeriksaan :
+   Merokok
+   Gula Darah
+   Benjolan Payudara
+   Indeks Massa Tubuh
+   IVA
+   Alkohol dalam pernafasan
+   Konsumsi Alkohol
+   Kurang Aktifitas
+   Lingkar Perut
+   Fungsi Paru Sederhana
+   Kurang Sayur dan Buah
+   Amfetamin Urin
+   Tekanan darah
+   Trigliserida
+   Penyululhan Cedera
+   Penyuluhan IVA
+   
+   
+   

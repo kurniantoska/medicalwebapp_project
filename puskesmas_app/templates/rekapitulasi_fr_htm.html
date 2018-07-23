@@ -32,17 +32,16 @@
                     <div class="col-lg-12">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3>Faktor Resiko PTM Tahun : 
-                                    <small><select ="2018">
-                                      <option type="submit" value="2015">2015</option>
-                                      <option type="submit" value="2016">2016</option>
-                                      <option type="submit" value="2017">2017</option>
-                                      <option type="submit" selected value="2018">2018</option>
-                                      <option type="submit" value="2019">2019</option>
-                                      <option type="submit" value="2020">2020</option>
-                                      <option type="submit" value="2021">2021</option>
-                                      </select>                   
-                                    </small> 
+                                <h3>Faktor Resiko PTM Tahun :
+                                        <small><select ="2018">
+                                          <option type="submit" value="2015">2015</option>
+                                          <option type="submit" value="2016">2016</option>
+                                          <option type="submit" value="2017">2017</option>
+                                          <option type="submit" selected value="2018">2018</option>
+                                          <option type="submit" value="2019">2019</option>
+                                          <option type="submit" value="2020">2020</option>
+                                          <option type="submit" value="2021">2021</option>
+                                        </small></select>                   
                                 </h3>
                             </div>
                             
@@ -61,12 +60,12 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for item in daftar_faktor_resiko %}
+                                        {% for item, item2 in daftar_faktor_resiko %}
                                         <tr class="item">
                                             <td>{{forloop.counter}}</td>
                                             <td>{{ item }}</td>
-                                            <td>....</td>
-                                            <td>....</td>
+                                            <td>{{ item2.0 }}</td>
+                                            <td>{{ item2.1 }}</td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
