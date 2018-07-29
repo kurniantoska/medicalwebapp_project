@@ -258,7 +258,6 @@ class EksekusiImportBerkasExcelPasien():
         # for data in rekam_medis_stage1[1]:
         #
 
-    @postpone
     def insert_data_pemeriksaan_ke_database(self, pasien= None):
         rekam_medis_stage1 = self.data_rekam_medis()
         """pasien, dup, berhasil = eksekusi1.data_duplikasi_cek_dan_import()"""
@@ -348,7 +347,6 @@ class EksekusiImportBerkasExcelPasien():
             self.data_import.imported_file = True
             self.data_import.save()
         
-        connection.close()
         return object_pemeriksaan, status_data_duplikat, status_data_berhasil_import
 
 def group_check(user):
