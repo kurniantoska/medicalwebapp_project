@@ -22,7 +22,8 @@ from .models import (
 
 
 from .forms import (
-    DataPemeriksaanForm, ImportFileExcelForm, DemografiPendudukForm
+    DataPemeriksaanForm, ImportFileExcelForm, DemografiPendudukForm,
+    AnalisaTabelForm,
 )
 
 from .utils import EksekusiImportBerkasExcelPasien, postpone
@@ -196,7 +197,10 @@ def rekapitulasi_fr(request):
     return render(request, template, context)
 
 def analisa_tabel(request):
-    context = locals()
+    form = AnalisaTabelForm()
+    context = {
+        'form' : form
+    }
     template = 'analisa_tabel.html'
     return render(request, template, context)
 

@@ -10,6 +10,12 @@ class DataPemeriksaanForm(ModelForm):
 class ImportFileExcelForm(forms.Form):
     berkas = forms.ModelChoiceField(queryset=DataPemeriksaan.objects.filter(imported_file=False))
     jumlah_data = forms.IntegerField(required=False)
+    
+class AnalisaTabelForm(forms.Form):
+    dari = forms.DateField(widget=forms.TextInput(attrs={'class':'datepicker'}), input_formats='%Y-%m-%d')
+    sd = forms.DateField(widget=forms.TextInput(attrs={'class':'datepicker'}), input_formats='%Y-%m-%d')
+    jenis = forms.CharField()
+    pemeriksaan = forms.CharField()
 
 class DemografiPendudukForm(ModelForm):
     class Meta:
