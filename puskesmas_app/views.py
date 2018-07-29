@@ -34,6 +34,8 @@ from django.http import (
     HttpResponseServerError,
 )
 
+import threading
+
 
 class DataPemeriksaanListView(ListView):
     model = DataPemeriksaan
@@ -103,13 +105,32 @@ def import_data(request):
                 # # eksekusi1.data_import = DataPemeriksaan.objects.get(file_excel__iexact='x.xlsx')
                 #
                 eksekusi1.berkas = eksekusi1.data_import.file_excel.path
+                # t = threading.Thread(target=create_email, args=(k,v))
+                
                 import_stage_1 = eksekusi1.baca_data_file_excel()
-                import_stage_2 = eksekusi1.data_pasien_tuple_list()
-                import_stage_3 = eksekusi1.parsing_data_pasien()
+                
+                t1 = threading.Thread(target=eksekusi1.data_pasien_tuple_list)
+                t2 = threading.Thread(target=eksekusi1.parsing_data_pasien)
+                
+                # no threading 
+                # import_stage_2 = eksekusi1.data_pasien_tuple_list() 
+                # import_stage_3 = eksekusi1.parsing_data_pasien()
+
                 pasien, dup, berhasil = eksekusi1.data_duplikasi_cek_dan_import()
                 # print(dup, berhasil)
-    
-                rekam_medis_stage1 = eksekusi1.data_rekam_medis()
+                
+                t3 = threading.Thread(target=eksekusi1.data_rekam_medis)
+                
+                t1.start()
+                t2.start()
+                t3.start()
+                
+                t1.join()
+                t2.join()
+                t3.join()
+                
+                # no threading
+                # rekam_medis_stage1 = eksekusi1.data_rekam_medis()
                 data_pemeriksaan, status_duplikat_data_pemeriksaan, status_berhasil_data_pemeriksaan = eksekusi1.insert_data_pemeriksaan_ke_database(
                     pasien)
     
