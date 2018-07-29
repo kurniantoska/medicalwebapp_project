@@ -10,6 +10,17 @@ import pytz
 import numpy as np
 
 from puskesmas_app.models import Pasien, Pemeriksaan, DataPemeriksaan
+from threading import Thread
+from django.db import connection
+
+
+def postpone(function):
+    def decorator(*args, **kwargs):
+        t = Thread(target = function, args=args, kwargs=kwargs)
+        t.daemon = True
+        t.start()
+    return decorator
+
 
 
 def ubah_timestamp_ke_tanggal(var_timestamp):
@@ -248,7 +259,7 @@ class EksekusiImportBerkasExcelPasien():
         # for data in rekam_medis_stage1[1]:
         #
 
-
+    @postpone
     def insert_data_pemeriksaan_ke_database(self, pasien= None):
         rekam_medis_stage1 = self.data_rekam_medis()
         """pasien, dup, berhasil = eksekusi1.data_duplikasi_cek_dan_import()"""
@@ -338,7 +349,7 @@ class EksekusiImportBerkasExcelPasien():
             self.data_import.imported_file = True
             self.data_import.save()
         return object_pemeriksaan, status_data_duplikat, status_data_berhasil_import
-
+    connection.close()
 
 def group_check(user):
     return user.groups.filter(name__in=['puskesmas',])
