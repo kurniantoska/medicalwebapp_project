@@ -17,7 +17,6 @@ from django.db import connection
 def postpone(function):
     def decorator(*args, **kwargs):
         t = Thread(target = function, args=args, kwargs=kwargs)
-        t.daemon = True
         t.start()
     return decorator
 
@@ -348,8 +347,9 @@ class EksekusiImportBerkasExcelPasien():
         if status_data_duplikat + status_data_berhasil_import == self.jumlah_data:
             self.data_import.imported_file = True
             self.data_import.save()
+        
+        connection.close()
         return object_pemeriksaan, status_data_duplikat, status_data_berhasil_import
-    connection.close()
 
 def group_check(user):
     return user.groups.filter(name__in=['puskesmas',])

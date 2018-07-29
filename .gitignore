@@ -105,3 +105,4 @@ venv.bak/
 
 # specific project
 medisproj/settings.py
+static/media/file_excel_import
