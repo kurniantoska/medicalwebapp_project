@@ -170,14 +170,8 @@ def data_demografi_penduduk(request):
 def rekapitulasi_fr(request):
     tahun = 2018
     
-    
     if request.method == "POST" :
-        selection = request.POST.get('id',None) 
-        if selection:
-            selected_year = 2018
-            return selected_year
-        else:
-            return
+        tahun = request.POST.get('select_tahun')
     
     # list untuk tampilan di template
     daftar_faktor_resiko = (
@@ -214,6 +208,7 @@ def rekapitulasi_fr(request):
     
     context = {
         'daftar_faktor_resiko' : daftar_faktor_resiko,
+        'tahun' : tahun,
     }
     
     template = 'rekapitulasi_fr_htm.html'
