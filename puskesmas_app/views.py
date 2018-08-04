@@ -17,7 +17,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from .models import (
     DataPemeriksaan, Puskesmas, Pemeriksaan,
-    DemografiPenduduk,
+    DemografiPenduduk, PetugasPuskesmas,
 )
 
 
@@ -74,17 +74,38 @@ def home_page(request):
 from .utils import group_check
     
 @login_required
-def import_data(request):
-    # print(request.POST)
+def import_data(request, *args, **kwargs):
+    
+    # inisiasi variabel untuk grab nama kecamatan
+    kecamatan_str = None
+    
+    # jika user staff maka mendapatkan full akses puskesmas
+    # jika tidak maka mencoba untuk inisiasi pembatasan
+    # petugas puskesmas
+    if request.user.is_staff :
+        petugas_puskesmas_instance = None
+    else :
+        try :
+            petugas_puskesmas_instance = PetugasPuskesmas.objects.get(user_link = request.user)
+            kecamatan_str = petugas_puskesmas_instance.puskesmas.kecamatan_kelurahan
+        except :
+            kecamatan_str = None
+            return HttpResponseForbidden('<h1>403 Forbidden</h1> <p> Gunakan User Puskesmas untuk import data </p>, back to <a href="/">home</a> please.. ', content_type='text/html')
+    
+    
     
     if not request.user.groups.filter(name__in=['puskesmas',]) :
         return HttpResponseForbidden('<h1>403 Forbidden</h1> <a href="/">home</a>', content_type='text/html')
+        
     else:
         dataPemeriksaanAll = DataPemeriksaan.objects.all()
         if 'btn_form' in request.POST:
             form_2 = None
-            form = DataPemeriksaanForm(request.POST, request.FILES)
+            form = DataPemeriksaanForm(request.POST, request.FILES, request=request)
             if form.is_valid():
+                publish = form.save(commit=False)
+                if not request.user.is_staff :
+                    publish.petugas_puskesmas = petugas_puskesmas_instance
                 form.save()
                 return redirect('puskesmas_app:import')
     
@@ -117,13 +138,15 @@ def import_data(request):
                 # print(data_pemeriksaan, status_duplikat_data_pemeriksaan, status_berhasil_data_pemeriksaan)
                 return redirect('puskesmas_app:import')
         else:
-            form = DataPemeriksaanForm()
+            form = DataPemeriksaanForm(request=request)
             form_2 = ImportFileExcelForm()
-    
+            
+        
         context = {
             'form' : form,
             'form_2' : form_2,
             'dataPemeriksaanObject' : dataPemeriksaanAll,
+            'petugas_puskesmas_instance' : kecamatan_str
         }
     
     template = 'import_data.html'
@@ -206,7 +229,10 @@ def analisa_tabel(request):
 
 def analisa_grafik(request):
     """ analisa grafik dengan url /puskesmas/penduduk/ """
-    context = locals()
+    form = AnalisaTabelForm()
+    context = {
+        'form' : form
+    }
     template = 'analisa_grafik.html'
     return render(request, template, context)
 

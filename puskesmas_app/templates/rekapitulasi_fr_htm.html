@@ -32,17 +32,20 @@
                     <div class="col-lg-12">
                         <div class="panel panel-default">
                             <div class="panel-heading">
+                            <form method="POST" id="form_faktor_resiko">
+                                {% csrf_token %}
                                 <h3>Faktor Resiko PTM Tahun :
-                                        <small><select ="2018">
-                                          <option type="submit" value="2015">2015</option>
-                                          <option type="submit" value="2016">2016</option>
-                                          <option type="submit" value="2017">2017</option>
-                                          <option type="submit" selected value="2018">2018</option>
-                                          <option type="submit" value="2019">2019</option>
-                                          <option type="submit" value="2020">2020</option>
-                                          <option type="submit" value="2021">2021</option>
-                                        </small></select>                   
+                                    <small><select ="2018" onchange="form_faktor_resiko.submit()">
+                                      <option value="2015">2015</option>
+                                      <option value="2016">2016</option>
+                                      <option value="2017">2017</option>
+                                      <option selected value="2018">2018</option>
+                                      <option value="2019">2019</option>
+                                      <option value="2020">2020</option>
+                                      <option value="2021">2021</option>
+                                    </small></select>                   
                                 </h3>
+                                </form>
                             </div>
                             
                             

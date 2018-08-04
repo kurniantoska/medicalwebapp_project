@@ -3,6 +3,11 @@
 {% block css %}
     <!-- Morris Charts CSS -->
     <link href="{% static 'vendor/morrisjs/morris.css' %}" rel="stylesheet">
+    
+    <!-- jquery UI -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
 {% endblock css %}
 
 {% block title %}Analisa Grafik{% endblock title %}
@@ -19,113 +24,79 @@
                     <!-- /.col-lg-12 -->
                 </div>
                 <!-- /.row -->
-
-                <!-- /.start-row2 -->
+                <!-- /.start-row1 -->
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Unggah Berkas
-                        </div>
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <label>Pilih Berkas</label>
-                                <input type="file">
+                            <div class="panel-heading">
+                               Hasil Analisis Surveilans
                             </div>
+                            <!-- /.panel-heading -->
+                            <div class="panel-body">
+                                <!-- Nav tabs -->
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a href="#proporsi" data-toggle="tab">Proporsi</a>
+                                    </li>
+                                    <li><a href="#cakupan" data-toggle="tab">Cakupan</a>
+                                    </li>
+                                </ul>
+    
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div class="tab-pane fade in active" id="proporsi">
+                                        <h4>Proporsi</h4>
+                                        <div class="form-group">
+                                            <form method="POST" class="form-horizontal">
+                                                {% csrf_token %}
+                                                {{ form }}
+                                                <br/>
+                                                <button type="submit" class="btn btn-primary m-t">Tampilkan</button>
+                                            </form>
+                                        </div>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                                    </div>
+                                    <div class="tab-pane fade" id="cakupan">
+                                        <h4>Cakupan</h4>
+                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.panel-body -->
                         </div>
-                        <!-- /.panel-body -->
+                        <!-- /.panel -->
                     </div>
-                    <!-- /.panel -->
-                    </div>
-                    <!-- /.col-lg-12 -->
                 </div>
-                <!-- /.end-row2 -->
-
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                Area Chart Example
-                            </div>
-                            <!-- /.panel-heading -->
-                            <div class="panel-body">
-                                <div id="morris-area-chart"></div>
-                            </div>
-                            <!-- /.panel-body -->
-                        </div>
-                        <!-- /.panel -->
-                    </div>
-                    <!-- /.col-lg-6 -->
-                    <div class="col-lg-6">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                Bar Chart Example
-                            </div>
-                            <!-- /.panel-heading -->
-                            <div class="panel-body">
-                                <div id="morris-bar-chart"></div>
-                            </div>
-                            <!-- /.panel-body -->
-                        </div>
-                        <!-- /.panel -->
-                    </div>
-                    <!-- /.col-lg-6 -->
-                    <div class="col-lg-6">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                Line Chart Example
-                            </div>
-                            <!-- /.panel-heading -->
-                            <div class="panel-body">
-                                <div id="morris-line-chart"></div>
-                            </div>
-                            <!-- /.panel-body -->
-                        </div>
-                        <!-- /.panel -->
-                    </div>
-                    <!-- /.col-lg-6 -->
-                    <div class="col-lg-6">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                Donut Chart Example
-                            </div>
-                            <!-- /.panel-heading -->
-                            <div class="panel-body">
-                                <div id="morris-donut-chart"></div>
-                            </div>
-                            <!-- /.panel-body -->
-                        </div>
-                        <!-- /.panel -->
-                    </div>
-                    <!-- /.col-lg-6 -->
-                    <div class="col-lg-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                Morris.js Usage
-                            </div>
-                            <!-- /.panel-heading -->
-                            <div class="panel-body">
-                                <p>Morris.js is a jQuery based charting plugin created by Olly Smith. In SB Admin, we are using the most recent version of Morris.js which includes the resize function, which makes the charts fully responsive. The documentation for Morris.js is available on their website, <a target="_blank" href="http://morrisjs.github.io/morris.js/">http://morrisjs.github.io/morris.js/</a>.</p>
-                                <a target="_blank" class="btn btn-default btn-lg btn-block" href="http://morrisjs.github.io/morris.js/">View Morris.js Documentation</a>
-                            </div>
-                            <!-- /.panel-body -->
-                        </div>
-                        <!-- /.panel -->
-                    </div>
-                    <!-- /.col-lg-6 -->
-                </div>
-                <!-- /.row -->
-
+                <!-- /.end-row1 -->
             </div>
             <!-- /.container-fluid -->
         <!-- /#page-wrapper -->
-
-    {% block javascript %}
-    <script src="{% static 'vendor/raphael/raphael.min.js' %}"></script>
-    <script src="{% static 'vendor/morrisjs/morris.min.js' %}"></script>
-    <script src="{% static 'data/morris-data.js' %}"></script>
-    {% endblock javascript %}
 {%  endblock content %}
+
+{% block javascript %}
+<!-- Speak Datepicker -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script>
+    $(function() {
+        $("#id_dari , #id_sd").datepicker({ 
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'yy-mm-dd',
+            onClose: function(dateText, inst) { 
+                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
+            }
+            
+        });
+    } );
+</script>
+
+
+<script src="{% static 'vendor/raphael/raphael.min.js' %}"></script>
+<script src="{% static 'vendor/morrisjs/morris.min.js' %}"></script>
+<script src="{% static 'data/morris-data.js' %}"></script>
+
+{% endblock javascript %}
 
 {% block footer_inside %}
     {% include 'snippets/footer.html' %}

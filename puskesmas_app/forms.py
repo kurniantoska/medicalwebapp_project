@@ -2,11 +2,20 @@ from django.forms import ModelForm
 from django import forms
 from . models import DataPemeriksaan, DemografiPenduduk
 
+
 class DataPemeriksaanForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        super(DataPemeriksaanForm, self).__init__(*args, **kwargs)
+        
+        if not self.request.user.is_staff:
+            del self.fields['petugas_puskesmas']
+
     class Meta:
         model = DataPemeriksaan
-        fields = ('petugas_puskesmas', 'file_excel',)
-
+        fields = ('petugas_puskesmas','file_excel',)
+        
+        
 class ImportFileExcelForm(forms.Form):
     berkas = forms.ModelChoiceField(queryset=DataPemeriksaan.objects.filter(imported_file=False))
     jumlah_data = forms.IntegerField(required=False)

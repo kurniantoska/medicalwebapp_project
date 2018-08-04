@@ -9,6 +9,7 @@
     <!-- DataTables Responsive CSS -->
     <link href="{% static 'vendor/datatables-responsive/dataTables.responsive.css' %}" rel="stylesheet">
     
+    <!-- jquery UI -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
@@ -53,6 +54,7 @@
                                         <h4>Proporsi</h4>
                                         <div class="form-group">
                                             <form method="POST" class="form-horizontal">
+                                                {% csrf_token %}
                                                 {{ form }}
                                                 <br/>
                                                 <button type="submit" class="btn btn-primary m-t">Tampilkan</button>

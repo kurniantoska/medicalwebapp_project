@@ -14,6 +14,8 @@ from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 
 from calendar import day_name
+from django.contrib.auth.models import User
+
 # import locale
 #
 # # set locale for general
@@ -81,7 +83,6 @@ class Puskesmas(models.Model):
     def __str__(self):
         return self.nama
 
-from django.contrib.auth.models import User
 
 # user petugas puskesmas
 class PetugasPuskesmas(models.Model):
@@ -113,13 +114,15 @@ class DataPemeriksaan(models.Model):
     def get_absolute_url(self):
         return reverse('puskesmas_app:data-pemeriksaan-detail',
                        kwargs={'pk': self.pk})
+    
     def get_absolute_url_delete(self):
         return reverse('puskesmas_app:data-pemeriksaan-delete',
                         kwargs={'pk': self.pk})
-
+    
+        
+    
 # Pasien
 class Pasien(models.Model):
-    
     no_bpjs             = models.CharField(max_length=30, null=True)
     no_ktp              = models.CharField(max_length=30, unique=False)
     nama_pasien         = models.CharField(max_length=200)
