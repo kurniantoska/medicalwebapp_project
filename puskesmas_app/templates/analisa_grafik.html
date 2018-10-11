@@ -1,14 +1,5 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
-{% block css %}
-    <!-- Morris Charts CSS -->
-    <link href="{% static 'vendor/morrisjs/morris.css' %}" rel="stylesheet">
-    
-    <!-- jquery UI -->
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
-{% endblock css %}
 
 {% block title %}Analisa Grafik{% endblock title %}
 {% block nav %}
@@ -53,7 +44,11 @@
                                                 <button type="submit" class="btn btn-primary m-t">Tampilkan</button>
                                             </form>
                                         </div>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                                        <div class="col-md-12">
+                                            {% if request.POST %}
+                                                <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                     <div class="tab-pane fade" id="cakupan">
                                         <h4>Cakupan</h4>
@@ -73,28 +68,76 @@
 {%  endblock content %}
 
 {% block javascript %}
-<!-- Speak Datepicker -->
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
+<script src="{% static 'vendor/highcharts/highcharts.js' %}"></script>
 <script>
-    $(function() {
-        $("#id_dari , #id_sd").datepicker({ 
-            changeMonth: true,
-            changeYear: true,
-            showButtonPanel: true,
-            dateFormat: 'yy-mm-dd',
-            onClose: function(dateText, inst) { 
-                $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
-            }
-            
+    $(document).ready(function(){
+
+        $("#id_dari, #id_sd").datepicker({
+            autoclose: true,
+            startView: 2,
+            minViewMode: 1,
+            format: "yyyy-mm",
         });
-    } );
+
+        {% if request.POST %}
+
+        Highcharts.chart('container', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: '{{ chart_title|safe }}'
+            },
+            subtitle: {
+                text: '{{ chart_sub_title|safe }}'
+            },
+            xAxis: {
+                categories: {{ chart_categories|safe }},
+                crosshair: true
+            },
+            yAxis: [{
+                min: 0,
+                max: 100,
+                labels: {
+                    format: '{value}%',
+                    style: {
+                        color: '#4572A7'
+                    }
+                },
+                title: {
+                    text: 'Proporsi',
+                    style: {
+                        color: '#4572A7'
+                    }
+                }
+            }, {
+                title: {
+                    text: 'Jumlah Orang',
+                    style: {
+                        color: '#89A54E'
+                    }
+                },
+                opposite: true
+            }],
+            tooltip: {
+                headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                    '<td style="padding:0"><b>{point.y:.1f}%</b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0
+                }
+            },
+            series: {{ chart_data|safe }}
+        });
+        {% endif %}
+    });
 </script>
-
-
-<script src="{% static 'vendor/raphael/raphael.min.js' %}"></script>
-<script src="{% static 'vendor/morrisjs/morris.min.js' %}"></script>
-<script src="{% static 'data/morris-data.js' %}"></script>
 
 {% endblock javascript %}
 

@@ -6,14 +6,14 @@ from django.db.models import Count
 from django.db.models import Q
 
 
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 
 from .models import (
     DataPemeriksaan, Puskesmas, Pemeriksaan,
@@ -29,11 +29,14 @@ from .forms import (
 from .utils import EksekusiImportBerkasExcelPasien, postpone
 
 from django.shortcuts import redirect
+import pandas as pd
 
 from django.http import (
     HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound,
-    HttpResponseServerError,
+    HttpResponseServerError, HttpResponseRedirect
 )
+
+import calendar
 
 
 class DataPemeriksaanListView(ListView):
@@ -53,13 +56,12 @@ class DataPemeriksaanDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         return context
 
+
 class DataPemeriksaanDeleteView(DeleteView):
     model = DataPemeriksaan
     success_url = reverse_lazy('home')
 
 
-
-# Create your views here.
 def login_page(request):
     context = locals()
     template = 'login.html'
@@ -86,14 +88,12 @@ def import_data(request, *args, **kwargs):
         petugas_puskesmas_instance = None
     else :
         try :
-            petugas_puskesmas_instance = PetugasPuskesmas.objects.get(user_link = request.user)
+            petugas_puskesmas_instance = PetugasPuskesmas.objects.get(user_link=request.user)
             kecamatan_str = petugas_puskesmas_instance.puskesmas.kecamatan_kelurahan
         except :
             kecamatan_str = None
             return HttpResponseForbidden('<h1>403 Forbidden</h1> <p> Gunakan User Puskesmas untuk import data </p>, back to <a href="/">home</a> please.. ', content_type='text/html')
-    
-    
-    
+
     if not request.user.groups.filter(name__in=['puskesmas',]) :
         return HttpResponseForbidden('<h1>403 Forbidden</h1> <a href="/">home</a>', content_type='text/html')
         
@@ -140,8 +140,7 @@ def import_data(request, *args, **kwargs):
         else:
             form = DataPemeriksaanForm(request=request)
             form_2 = ImportFileExcelForm()
-            
-        
+
         context = {
             'form' : form,
             'form_2' : form_2,
@@ -152,6 +151,7 @@ def import_data(request, *args, **kwargs):
     template = 'import_data.html'
     return render(request, template, context)
 
+
 def data_demografi_penduduk(request):
     form = DemografiPendudukForm()
     if request.POST :
@@ -159,13 +159,13 @@ def data_demografi_penduduk(request):
         if form.is_valid():
             form.save()
             return redirect('home')
-            
-        
+
     context = {
         'form' : form,
     }
     template = 'data_demografi_penduduk_htm.html'
     return render(request, template, context)
+
 
 def rekapitulasi_fr(request):
     tahun = 2018
@@ -207,29 +207,121 @@ def rekapitulasi_fr(request):
     daftar_faktor_resiko = tuple(zip(daftar_faktor_resiko, rekap))
     
     context = {
-        'daftar_faktor_resiko' : daftar_faktor_resiko,
-        'tahun' : tahun,
+        'daftar_faktor_resiko': daftar_faktor_resiko,
+        'tahun': tahun,
     }
     
     template = 'rekapitulasi_fr_htm.html'
     return render(request, template, context)
 
+
 def analisa_tabel(request):
     form = AnalisaTabelForm()
     context = {
-        'form' : form
+        'form': form
     }
     template = 'analisa_tabel.html'
     return render(request, template, context)
 
-def analisa_grafik(request):
-    """ analisa grafik dengan url /puskesmas/penduduk/ """
-    form = AnalisaTabelForm()
-    context = {
-        'form' : form
-    }
-    template = 'analisa_grafik.html'
-    return render(request, template, context)
+
+class AnalisaGrafikView(LoginRequiredMixin, FormView):
+    model = Pemeriksaan
+    template_name = 'analisa_grafik.html'
+    form_class = AnalisaTabelForm
+    success_url = reverse_lazy('puskesmas_app:analisa_grafik')
+
+    def form_valid(self, form):
+        context = dict()
+
+        puskesmas = form.cleaned_data['puskesmas']
+        dari = form.cleaned_data['dari']
+        sd = form.cleaned_data['sd']
+        jenis = form.cleaned_data['jenis']
+        tipe_pemeriksaan = form.cleaned_data['pemeriksaan']
+
+        nama_pemeriksaan = dict(form.fields['pemeriksaan'].choices)[tipe_pemeriksaan]
+        nama_jenis = dict(form.fields['jenis'].choices)[jenis]
+
+        split_from = dari.split('-')
+        split_to = sd.split('-')
+
+        last_day_to = calendar.monthrange(int(split_to[0]), int(split_to[1]))[1]
+
+        date_range = {
+            'tanggal__range': ["{}-1".format(dari), "{}-{}".format(sd, last_day_to)]
+        }
+
+        month_from = Pemeriksaan.get_month_str(int(split_from[1]))
+        month_to = Pemeriksaan.get_month_str(int(split_to[1]))
+        year_from = split_from[0]
+        year_to = split_to[0]
+
+        qs = Pemeriksaan.objects.filter(dari_file__petugas_puskesmas__puskesmas=puskesmas,
+                                        tanggal__isnull=False, **date_range)
+
+        chart_title = "Proporsi {} Menurut {} di Posbindu {}".format(nama_pemeriksaan, nama_jenis, puskesmas.nama)
+        chart_sub_title = "{} {} s/d {} {}".format(month_from, year_from, month_to, year_to)
+        chart_data = []
+        chart_categories = []
+
+        if jenis == 'wilayah':
+            chart_categories.insert(0, puskesmas.nama)
+            chart_categories.append('TOTAL')
+            results = Pemeriksaan.get_data_by_wilayah(qs, tipe_pemeriksaan, 1)
+            print("========== results", results)
+            chart_data.append({
+                'name': 'Persentase Ya',
+                'color': '#f70000',
+                'data': results[0]
+            })
+            chart_data.append({
+                'name': 'Persentase Tidak',
+                'color': '#a9c283',
+                'data': results[1]
+            })
+        elif jenis == 'usia':
+            pass
+        else:
+            data_value = []
+            dates = pd.date_range("{}-1".format(dari), "{}-{}".format(sd, last_day_to), freq='MS').strftime("%b %Y").\
+                tolist()
+            for i in dates:
+                chart_categories.append(i)
+                data_value.append(0)
+            chart_categories.append('TOTAL')
+            data_value.append(0)
+
+            chart_data.append({
+                'name': 'Persentase Ya',
+                'color': '#f70000',
+                'data': data_value
+            })
+            chart_data.append({
+                'name': 'Persentase Tidak',
+                'color': '#a9c283',
+                'data': data_value
+            })
+
+        context.update({
+            'form': form,
+            'chart_title': chart_title,
+            'chart_sub_title': chart_sub_title,
+            'chart_categories': chart_categories,
+            'chart_data': chart_data,
+            'results': qs
+        })
+
+        return render(self.request, self.get_template_names(), context)
+
+
+# def analisa_grafik(request):
+#     """ analisa grafik dengan url /puskesmas/penduduk/ """
+#     form = AnalisaTabelForm()
+#     context = {
+#         'form' : form
+#     }
+#     template = 'analisa_grafik.html'
+#     return render(request, template, context)
 
 def form_handle_eksekusi_import(request):
     pass

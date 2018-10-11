@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from . models import DataPemeriksaan, DemografiPenduduk
+from . models import DataPemeriksaan, DemografiPenduduk, Puskesmas
 
 
 class DataPemeriksaanForm(ModelForm):
@@ -19,12 +19,43 @@ class DataPemeriksaanForm(ModelForm):
 class ImportFileExcelForm(forms.Form):
     berkas = forms.ModelChoiceField(queryset=DataPemeriksaan.objects.filter(imported_file=False))
     jumlah_data = forms.IntegerField(required=False)
+
     
 class AnalisaTabelForm(forms.Form):
-    dari = forms.DateField(widget=forms.TextInput(attrs={'class':'datepicker'}), input_formats='%Y-%m-%d')
-    sd = forms.DateField(widget=forms.TextInput(attrs={'class':'datepicker'}), input_formats='%Y-%m-%d')
-    jenis = forms.CharField()
-    pemeriksaan = forms.CharField()
+
+    PEMERIKSAAN_CHOICE = (
+        ('merokok', 'Merokok'),
+        ('gula', 'Gula Darah'),
+        ('benjolan_payudara', 'Benjolan Payudara'),
+        ('indeks_masa_tubuh', 'Index Massa Tubuh'),
+        ('iva', 'IVA'),
+        ('kadar_alkohol_pernapasan', 'Alkohol dalam Pernapasan'),
+        ('kolestrol', 'Kolesterol'),
+        ('konsumsi_alkohol', 'Konsumsi Alkohol'),
+        ('kurang_aktifitas_fisik', 'Kurang Aktifitas'),
+        ('lingkar_perut', 'Lingkar Perut'),
+        ('pengukuran_fungsi_paru', 'Fungsi Paru Sederhana'),
+        ('kurang_sayur_dan_buah', 'Kurang Sayuran dan Buah'),
+        ('tes_amfetamin_urin', 'Amfetamin Urin'),
+        ('tekanandarah', 'Tekanan Darah'),
+        ('trigliserida', 'Trigliserida'),
+        ('penyuluhan_potensi_cedera', 'Penyuluhan Cedera'),
+        ('penyuluhan_rokok', 'Penyuluhan Rokok'),
+        ('penyuluhan_iva_and_cbe', 'Penyuluhan IVA'),
+    )
+
+    JENIS_CHOICE = (
+        ('wilayah', 'Wilayah'),
+        ('jenis_kelamin', 'Jenis Kelamin'),
+        ('usia', 'Usia'),
+        ('waktu', 'Waktu'),
+    )
+    puskesmas = forms.ModelChoiceField(queryset=Puskesmas.objects.all(), label="Posbindu")
+    dari = forms.CharField(widget=forms.TextInput(attrs={'class': 'datepicker'}))
+    sd = forms.CharField(widget=forms.TextInput(attrs={'class': 'datepicker'}))
+    jenis = forms.ChoiceField(choices=JENIS_CHOICE)
+    pemeriksaan = forms.ChoiceField(choices=PEMERIKSAAN_CHOICE)
+
 
 class DemografiPendudukForm(ModelForm):
     class Meta:
@@ -44,6 +75,4 @@ class DemografiPendudukForm(ModelForm):
             "u60_69_perempuan" : "PEREMPUAN UMUR 60 - 69 TAHUN",
             "u70_lebih_laki_laki" : "LAKI-LAKI UMUR LEBIH DARI 70 TAHUN",
             "u70_lebih_perempuan" : "PEREMPUAN UMUR LEBIH DARI 70 TAHUN",
-            
-            
         }
