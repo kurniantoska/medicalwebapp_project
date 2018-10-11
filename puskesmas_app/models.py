@@ -71,13 +71,14 @@ class Jadwal_Dokter(models.Model):
     hari = models.CharField(max_length=1, choices=list_nama_hari)
 
 
-from .static_var import KECAMATAN_KELURAHAN_SURABAYA
-
+from .static_var import KELURAHAN_DI_SURABAYA
+from .static_var import KECAMATAN_DI_SURABAYA
 
 # puskesmas
 class Puskesmas(models.Model):
     nama = models.CharField(max_length=60)
-    kecamatan_kelurahan = models.CharField(max_length=50, choices = KECAMATAN_KELURAHAN_SURABAYA)
+    kecamatan = models.CharField(max_length=50, choices = KECAMATAN_DI_SURABAYA, null=True, blank=True)
+    kelurahan = models.CharField(max_length=50, choices = KELURAHAN_DI_SURABAYA, null=True, blank=True)
     alamat = models.TextField()
 
     def __str__(self):
@@ -274,8 +275,16 @@ class Pemeriksaan(models.Model):
     # 'kurang_sayur_dan_buah', 'konsumsi_alkohol', 
     # 'benjolan_payudara', 'iva',]
     @staticmethod
-    def qs_model_rekapitulasi(tahun:int, item:str):
-        qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
+    def qs_model_rekapitulasi(tahun:int, item:str, kecamatan:str = None):
+        if kecamatan :
+            qs = Pemeriksaan.objects.filter(
+                tanggal__year=tahun,
+                dari_file__petugas_puskesmas__puskesmas__kecamatan = kecamatan
+                )
+        else:
+            qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
+        
+        
         data = qs.aggregate(
             # menggunakan parameter distinct untuk menghilangkan duplikasi
             p_true=Count('pasien', filter=Q(**{item: True}), distinct=True),
@@ -288,14 +297,19 @@ class Pemeriksaan(models.Model):
                 )
     
     @staticmethod
-    def get_jumlah_beresiko_dan_diperiksa(tahun:int, item:str):
+    def get_jumlah_beresiko_dan_diperiksa(tahun:int, item:str, kecamatan:str=None):
         """mendapatkan jumlah pemeriksaan dari item untuk keperluan 
         output pada halaman rekapitulasi_fr
         dengan return (jumlah_beresiko, jumlah_yang_diperiksa)"""
-        
+        if kecamatan :
+            qs = Pemeriksaan.objects.filter(
+                tanggal__year=tahun,
+                dari_file__petugas_puskesmas__puskesmas__kecamatan = kecamatan
+                )
+        else:
+            qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
         
         if item == 'tekanandarah' :
-            qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
             data = qs.aggregate(
                 p_true=Count('pasien', filter=Q(sistol__gt = 140), distinct=True),
                 p_false=Count('pasien', filter=Q(sistol__lte = 140), distinct=True),
@@ -306,7 +320,6 @@ class Pemeriksaan(models.Model):
                 data['p_none'] or 0,)
         
         elif item == 'asamurat' :
-            qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
             data = qs.aggregate(
                 p_true=Count('pasien', filter=Q(trigliserida__gt = 7), distinct=True),
                 p_false=Count('pasien', filter=Q(trigliserida__lte = 7), distinct=True),
@@ -318,7 +331,6 @@ class Pemeriksaan(models.Model):
         
         
         elif item == 'gula' :
-            qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
             data = qs.aggregate(
                 p_true=Count('pasien', filter=Q(gula__lt = 80) | Q(gula__gt = 144), distinct=True),
                 p_false=Count('pasien', filter=Q(gula__gt = 80, gula__lt = 144), distinct=True),
@@ -332,7 +344,6 @@ class Pemeriksaan(models.Model):
             _ = (0, 0)
         
         elif item == 'kolestrol' :
-            qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
             data = qs.aggregate(
                 p_true=Count('pasien', filter=Q(kolestrol__gt = 200), distinct=True),
                 p_false=Count('pasien', filter=Q(kolestrol__lte = 200), distinct=True),
@@ -344,7 +355,6 @@ class Pemeriksaan(models.Model):
         
         
         elif item == 'imt' :
-            qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
             data = qs.aggregate(
                 p_true=Count('pasien', filter=Q(indeks_masa_tubuh__gt = 25), distinct=True),
                 p_false=Count('pasien', filter=Q(indeks_masa_tubuh__lte = 25), distinct=True),

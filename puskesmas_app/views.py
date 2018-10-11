@@ -87,7 +87,7 @@ def import_data(request, *args, **kwargs):
     else :
         try :
             petugas_puskesmas_instance = PetugasPuskesmas.objects.get(user_link = request.user)
-            kecamatan_str = petugas_puskesmas_instance.puskesmas.kecamatan_kelurahan
+            kecamatan_str = petugas_puskesmas_instance.puskesmas.kecamatan
         except :
             kecamatan_str = None
             return HttpResponseForbidden('<h1>403 Forbidden</h1> <p> Gunakan User Puskesmas untuk import data </p>, back to <a href="/">home</a> please.. ', content_type='text/html')

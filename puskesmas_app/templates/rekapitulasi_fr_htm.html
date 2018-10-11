@@ -105,9 +105,13 @@
 <script>
 $(document).ready(function() {
     $('#dataTables-example').DataTable({
-        responsive: true
+        responsive: true,
+        
+        // make default page show with 50 row
+        "pageLength": 50,
     });
     
+    // make selection tahun dinamically change
     $("div.pilih_tahun select").val("{{ tahun }}");
 });
 </script>
