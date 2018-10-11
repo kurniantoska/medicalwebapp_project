@@ -30,7 +30,7 @@ urlpatterns = [
     path('penduduk_create/', DemografiPendudukCreateView.as_view(), name='penduduk_cr'),
     path('rekapituasi_fr/', views.rekapitulasi_fr, name='rekapitulasi_fr'),
     path('analisa_tabel/', views.analisa_tabel, name='analisa_tabel'),
-    path('analisa_grafik/', views.analisa_grafik, name='analisa_grafik'),
+    path('analisa_grafik/', views.AnalisaGrafikView.as_view(), name='analisa_grafik'),
     path('data_pemeriksaan/', DataPemeriksaanListView.as_view(),
          name='data-pemeriksaan-list'),
     path('data_pemeriksaan/<int:pk>/',

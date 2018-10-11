@@ -103,7 +103,7 @@ class PetugasPuskesmas(models.Model):
 # Data Pemeriksaan Pasien
 class DataPemeriksaan(models.Model):
     petugas_puskesmas = models.ForeignKey(PetugasPuskesmas, on_delete=models.CASCADE)
-    file_excel = models.FileField(upload_to = 'file_excel_import', unique=True)
+    file_excel = models.FileField(upload_to= 'file_excel_import', unique=True)
     imported_file = models.BooleanField(default=False)
     tanggal_upload = models.DateTimeField(auto_now_add=True, auto_now=False)
     tanggal_revisi = models.DateTimeField(auto_now=True, auto_now_add=False)
@@ -119,8 +119,7 @@ class DataPemeriksaan(models.Model):
         return reverse('puskesmas_app:data-pemeriksaan-delete',
                         kwargs={'pk': self.pk})
     
-        
-    
+
 # Pasien
 class Pasien(models.Model):
     no_bpjs             = models.CharField(max_length=30, null=True)
@@ -151,15 +150,17 @@ class Pasien(models.Model):
         return "{} - {}".format(self.nama_pasien, self.no_ktp)
         
     def get_umur(self):
-        if self.tanggal_lahir :
+        if self.tanggal_lahir:
             return relativedelta(timezone.now().date(), self.tanggal_lahir).years
         else:
             return None
+
 
 class Resep(models.Model):
     nama_obat = models.CharField(max_length=50)
     jenis_obat = models.CharField(max_length=50)
     keterangan = models.CharField(max_length=50)
+
 
 class Pembayaran(models.Model):
     pasien = models.ForeignKey(Pasien, on_delete=models.CASCADE)
@@ -168,12 +169,14 @@ class Pembayaran(models.Model):
     harga_obat = models.IntegerField()
     total_harga = models.IntegerField()
 
+
 class Pendaftaran(models.Model):
     pasien = models.ForeignKey(Pasien, on_delete=models.CASCADE)
     poli = models.ForeignKey(Poliklinik, on_delete=models.CASCADE)
     dokter = models.ForeignKey(Dokter, on_delete=models.CASCADE)
     tanggal_daftar = models.DateTimeField()
     keluhan = models.TextField()
+
 
 class Rekam_medis(models.Model):
     resep = models.ForeignKey(Resep, on_delete=models.CASCADE)
@@ -192,6 +195,22 @@ class Rekam_medis(models.Model):
 
 # database asli
 class Pemeriksaan(models.Model):
+
+    LIST_OF_MONTHS = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    ]
+
     dari_file = models.ForeignKey(DataPemeriksaan, on_delete=models.CASCADE)
     migrasi_dari_excel = models.BooleanField(default=False)
     tanggal = models.DateField(null=True)
@@ -256,7 +275,7 @@ class Pemeriksaan(models.Model):
     penyuluhan_potensi_cedera = models.NullBooleanField(choices=PENYULUHAN_CHOICES)
 
     # ext
-    indeks_masa_tubuh = models.FloatField (null=True)
+    indeks_masa_tubuh = models.FloatField(null=True)
     
     # tambahan
     
@@ -269,12 +288,11 @@ class Pemeriksaan(models.Model):
     def __str__(self):
         return "{}, {}".format(self.tanggal, self.pasien.nama_pasien)
 
-        
     # only for a_list = ['merokok', 'kurang_aktifitas_fisik', 
     # 'kurang_sayur_dan_buah', 'konsumsi_alkohol', 
     # 'benjolan_payudara', 'iva',]
     @staticmethod
-    def qs_model_rekapitulasi(tahun:int, item:str):
+    def qs_model_rekapitulasi(tahun: int, item: str):
         qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
         data = qs.aggregate(
             # menggunakan parameter distinct untuk menghilangkan duplikasi
@@ -288,78 +306,180 @@ class Pemeriksaan(models.Model):
                 )
     
     @staticmethod
-    def get_jumlah_beresiko_dan_diperiksa(tahun:int, item:str):
+    def get_jumlah_beresiko_dan_diperiksa(tahun: int, item: str):
         """mendapatkan jumlah pemeriksaan dari item untuk keperluan 
         output pada halaman rekapitulasi_fr
         dengan return (jumlah_beresiko, jumlah_yang_diperiksa)"""
-        
-        
+
         if item == 'tekanandarah' :
             qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
             data = qs.aggregate(
-                p_true=Count('pasien', filter=Q(sistol__gt = 140), distinct=True),
-                p_false=Count('pasien', filter=Q(sistol__lte = 140), distinct=True),
-                p_none=Count('pasien', filter=Q(sistol = None), distinct=True),
+                p_true=Count('pasien', filter=Q(sistol__gt=140), distinct=True),
+                p_false=Count('pasien', filter=Q(sistol__lte=140), distinct=True),
+                p_none=Count('pasien', filter=Q(sistol=None), distinct=True),
             )
-            _ = (data['p_true'] or 0, 
-                data['p_false'] or 0, 
-                data['p_none'] or 0,)
+            _ = (data['p_true'] or 0,
+                 data['p_false'] or 0,
+                 data['p_none'] or 0,)
         
         elif item == 'asamurat' :
             qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
             data = qs.aggregate(
-                p_true=Count('pasien', filter=Q(trigliserida__gt = 7), distinct=True),
-                p_false=Count('pasien', filter=Q(trigliserida__lte = 7), distinct=True),
-                p_none=Count('pasien', filter=Q(trigliserida = None), distinct=True),
+                p_true=Count('pasien', filter=Q(trigliserida__gt=7), distinct=True),
+                p_false=Count('pasien', filter=Q(trigliserida__lte=7), distinct=True),
+                p_none=Count('pasien', filter=Q(trigliserida=None), distinct=True),
             )
-            _ = (data['p_true'] or 0, 
-                data['p_false'] or 0, 
-                data['p_none'] or 0,)
-        
-        
-        elif item == 'gula' :
+            _ = (data['p_true'] or 0,
+                 data['p_false'] or 0,
+                 data['p_none'] or 0,)
+
+        elif item == 'gula':
             qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
             data = qs.aggregate(
-                p_true=Count('pasien', filter=Q(gula__lt = 80) | Q(gula__gt = 144), distinct=True),
-                p_false=Count('pasien', filter=Q(gula__gt = 80, gula__lt = 144), distinct=True),
+                p_true=Count('pasien', filter=Q(gula__lt = 80) | Q(gula__gt=144), distinct=True),
+                p_false=Count('pasien', filter=Q(gula__gt = 80, gula__lt=144), distinct=True),
                 p_none=Count('pasien', filter=Q(gula = None), distinct=True),
             )
-            _ = (data['p_true'] or 0, 
-                data['p_false'] or 0, 
-                data['p_none'] or 0,)
+            _ = (data['p_true'] or 0,
+                 data['p_false'] or 0,
+                 data['p_none'] or 0,)
         
         elif item == 'amfetamin_urin':
             _ = (0, 0)
         
-        elif item == 'kolestrol' :
+        elif item == 'kolestrol':
             qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
             data = qs.aggregate(
-                p_true=Count('pasien', filter=Q(kolestrol__gt = 200), distinct=True),
-                p_false=Count('pasien', filter=Q(kolestrol__lte = 200), distinct=True),
-                p_none=Count('pasien', filter=Q(sistol = None), distinct=True),
+                p_true=Count('pasien', filter=Q(kolestrol__gt=200), distinct=True),
+                p_false=Count('pasien', filter=Q(kolestrol__lte=200), distinct=True),
+                p_none=Count('pasien', filter=Q(sistol=None), distinct=True),
             )
-            _ = (data['p_true'] or 0, 
-                data['p_false'] or 0, 
-                data['p_none'] or 0,)
-        
-        
-        elif item == 'imt' :
+            _ = (data['p_true'] or 0,
+                 data['p_false'] or 0,
+                 data['p_none'] or 0,)
+
+        elif item == 'imt':
             qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
             data = qs.aggregate(
-                p_true=Count('pasien', filter=Q(indeks_masa_tubuh__gt = 25), distinct=True),
-                p_false=Count('pasien', filter=Q(indeks_masa_tubuh__lte = 25), distinct=True),
-                p_none=Count('pasien', filter=Q(indeks_masa_tubuh = None), distinct=True),
+                p_true=Count('pasien', filter=Q(indeks_masa_tubuh__gt=25), distinct=True),
+                p_false=Count('pasien', filter=Q(indeks_masa_tubuh__lte=25), distinct=True),
+                p_none=Count('pasien', filter=Q(indeks_masa_tubuh=None), distinct=True),
             )
-            _ = (data['p_true'] or 0, 
-                data['p_false'] or 0, 
-                data['p_none'] or 0,)
-        
-        else :
+            _ = (data['p_true'] or 0,
+                 data['p_false'] or 0,
+                 data['p_none'] or 0,)
+        else:
             _ = Pemeriksaan.qs_model_rekapitulasi(tahun, item)
         
         jumlah_beresiko = _[0]
         jumlah_yang_diperiksa = _[0] + _[1]
-        return (jumlah_beresiko, jumlah_yang_diperiksa)
+        return jumlah_beresiko, jumlah_yang_diperiksa
+
+    @staticmethod
+    def get_month_str(index):
+        return Pemeriksaan.LIST_OF_MONTHS[index-1]
+
+    @staticmethod
+    def get_data_analisa_grafik(qs, item, loop):
+
+        jumlah_ya = []
+        jumlah_tidak = []
+        total_ya = 0
+        total_tidak = 0
+        jumlah_pasien = 0
+
+        for i in range(0, loop):
+            if item == 'tekanandarah':
+                data = qs.aggregate(
+                    p_true=Count('pasien', filter=Q(sistol__gt=140), distinct=True),
+                    p_false=Count('pasien', filter=Q(sistol__lte=140), distinct=True),
+                    p_none=Count('pasien', filter=Q(sistol=None), distinct=True),
+                )
+                _ = (data['p_true'] or 0,
+                     data['p_false'] or 0,
+                     data['p_none'] or 0,)
+
+            elif item == 'asamurat':
+                data = qs.aggregate(
+                    p_true=Count('pasien', filter=Q(trigliserida__gt=7), distinct=True),
+                    p_false=Count('pasien', filter=Q(trigliserida__lte=7), distinct=True),
+                    p_none=Count('pasien', filter=Q(trigliserida=None), distinct=True),
+                )
+                _ = (data['p_true'] or 0,
+                     data['p_false'] or 0,
+                     data['p_none'] or 0,)
+
+            elif item == 'gula':
+                data = qs.aggregate(
+                    p_true=Count('pasien', filter=Q(gula__lt=80) | Q(gula__gt=144), distinct=True),
+                    p_false=Count('pasien', filter=Q(gula__gt=80, gula__lt=144), distinct=True),
+                    p_none=Count('pasien', filter=Q(gula=None), distinct=True),
+                )
+                _ = (data['p_true'] or 0,
+                     data['p_false'] or 0,
+                     data['p_none'] or 0,)
+
+            elif item == 'amfetamin_urin':
+                _ = (0, 0)
+
+            elif item == 'kolestrol':
+                data = qs.aggregate(
+                    p_true=Count('pasien', filter=Q(kolestrol__gt=200), distinct=True),
+                    p_false=Count('pasien', filter=Q(kolestrol__lte=200), distinct=True),
+                    p_none=Count('pasien', filter=Q(sistol=None), distinct=True),
+                )
+                _ = (data['p_true'] or 0,
+                     data['p_false'] or 0,
+                     data['p_none'] or 0,)
+
+            elif item == 'imt':
+                data = qs.aggregate(
+                    p_true=Count('pasien', filter=Q(indeks_masa_tubuh__gt=25), distinct=True),
+                    p_false=Count('pasien', filter=Q(indeks_masa_tubuh__lte=25), distinct=True),
+                    p_none=Count('pasien', filter=Q(indeks_masa_tubuh=None), distinct=True),
+                )
+                _ = (data['p_true'] or 0,
+                     data['p_false'] or 0,
+                     data['p_none'] or 0,)
+            else:
+                data = qs.aggregate(
+                    p_true=Count('pasien', filter=Q(**{item: True}), distinct=True),
+                    p_false=Count('pasien', filter=Q(**{item: False}), distinct=True),
+                    p_none=Count('pasien', filter=Q(**{item: None}), distinct=True),
+                )
+                _ = (data['p_true'] or 0,
+                     data['p_false'] or 0,
+                     data['p_none'] or 0,)
+
+            jumlah_pasien += _[0] + _[1]
+
+            if _[0] == 0:
+                hasil_ya = 0
+                total_ya += 0
+            else:
+                percent = (_[0]/jumlah_pasien) * 100.0
+                hasil_ya = percent
+                total_ya += percent
+
+            if _[1] == 0:
+                hasil_tidak = 0
+                total_tidak += 0
+            else:
+                percent = (_[1]/jumlah_pasien) * 100.0
+                hasil_tidak = percent
+                total_tidak += percent
+
+            jumlah_ya.append(hasil_ya)
+            jumlah_tidak.append(hasil_tidak)
+
+        # tambah total
+        jumlah_ya.append(total_ya/len(jumlah_ya))
+        jumlah_tidak.append(total_tidak/len(jumlah_tidak))
+        return [jumlah_ya, jumlah_tidak, total_ya, total_tidak]
+
+    @staticmethod
+    def get_data_by_wilayah(qs, item, loop):
+        return Pemeriksaan.get_data_analisa_grafik(qs, item, loop)
 
     # def save(self, *args, **kwargs):
     #     # Check how the current values differ from ._loaded_values. For example,
