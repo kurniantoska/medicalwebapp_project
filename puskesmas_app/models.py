@@ -336,9 +336,9 @@ class Pemeriksaan(models.Model):
         elif item == 'gula':
             qs = Pemeriksaan.objects.filter(tanggal__year=tahun)
             data = qs.aggregate(
-                p_true=Count('pasien', filter=Q(gula__lt = 80) | Q(gula__gt=144), distinct=True),
-                p_false=Count('pasien', filter=Q(gula__gt = 80, gula__lt=144), distinct=True),
-                p_none=Count('pasien', filter=Q(gula = None), distinct=True),
+                p_true=Count('pasien', filter=Q(gula__lt=80) | Q(gula__gt=144), distinct=True),
+                p_false=Count('pasien', filter=Q(gula__gt=80, gula__lt=144), distinct=True),
+                p_none=Count('pasien', filter=Q(gula=None), distinct=True),
             )
             _ = (data['p_true'] or 0,
                  data['p_false'] or 0,
@@ -380,17 +380,23 @@ class Pemeriksaan(models.Model):
         return Pemeriksaan.LIST_OF_MONTHS[index-1]
 
     @staticmethod
-    def get_data_analisa_grafik(qs, item, loop):
-
+    def get_data_analisa_grafik(qs, item, loop, extra):
+        
         jumlah_ya = []
         jumlah_tidak = []
         total_ya = 0
         total_tidak = 0
-        jumlah_pasien = 0
+        jumlah_keseluruhan_pasien = qs.aggregate(total=Count('pasien', distinct=True))['total']
 
         for i in range(0, loop):
+            
+            if len(extra) > 0:
+                fs = qs.filter(**extra[i])
+            else:
+                fs = qs
+            
             if item == 'tekanandarah':
-                data = qs.aggregate(
+                data = fs.aggregate(
                     p_true=Count('pasien', filter=Q(sistol__gt=140), distinct=True),
                     p_false=Count('pasien', filter=Q(sistol__lte=140), distinct=True),
                     p_none=Count('pasien', filter=Q(sistol=None), distinct=True),
@@ -399,8 +405,8 @@ class Pemeriksaan(models.Model):
                      data['p_false'] or 0,
                      data['p_none'] or 0,)
 
-            elif item == 'asamurat':
-                data = qs.aggregate(
+            elif item == 'trigliserida':
+                data = fs.aggregate(
                     p_true=Count('pasien', filter=Q(trigliserida__gt=7), distinct=True),
                     p_false=Count('pasien', filter=Q(trigliserida__lte=7), distinct=True),
                     p_none=Count('pasien', filter=Q(trigliserida=None), distinct=True),
@@ -410,7 +416,7 @@ class Pemeriksaan(models.Model):
                      data['p_none'] or 0,)
 
             elif item == 'gula':
-                data = qs.aggregate(
+                data = fs.aggregate(
                     p_true=Count('pasien', filter=Q(gula__lt=80) | Q(gula__gt=144), distinct=True),
                     p_false=Count('pasien', filter=Q(gula__gt=80, gula__lt=144), distinct=True),
                     p_none=Count('pasien', filter=Q(gula=None), distinct=True),
@@ -419,21 +425,18 @@ class Pemeriksaan(models.Model):
                      data['p_false'] or 0,
                      data['p_none'] or 0,)
 
-            elif item == 'amfetamin_urin':
-                _ = (0, 0)
-
             elif item == 'kolestrol':
-                data = qs.aggregate(
+                data = fs.aggregate(
                     p_true=Count('pasien', filter=Q(kolestrol__gt=200), distinct=True),
                     p_false=Count('pasien', filter=Q(kolestrol__lte=200), distinct=True),
-                    p_none=Count('pasien', filter=Q(sistol=None), distinct=True),
+                    p_none=Count('pasien', filter=Q(kolestrol=None), distinct=True),
                 )
                 _ = (data['p_true'] or 0,
                      data['p_false'] or 0,
                      data['p_none'] or 0,)
 
-            elif item == 'imt':
-                data = qs.aggregate(
+            elif item == 'indeks_masa_tubuh':
+                data = fs.aggregate(
                     p_true=Count('pasien', filter=Q(indeks_masa_tubuh__gt=25), distinct=True),
                     p_false=Count('pasien', filter=Q(indeks_masa_tubuh__lte=25), distinct=True),
                     p_none=Count('pasien', filter=Q(indeks_masa_tubuh=None), distinct=True),
@@ -441,17 +444,39 @@ class Pemeriksaan(models.Model):
                 _ = (data['p_true'] or 0,
                      data['p_false'] or 0,
                      data['p_none'] or 0,)
-            else:
-                data = qs.aggregate(
-                    p_true=Count('pasien', filter=Q(**{item: True}), distinct=True),
-                    p_false=Count('pasien', filter=Q(**{item: False}), distinct=True),
-                    p_none=Count('pasien', filter=Q(**{item: None}), distinct=True),
+
+            elif item == 'lingkar_perut':
+                data = fs.aggregate(
+                    p_true=Count('pasien', filter=Q(lingkar_perut__gt=25), distinct=True),
+                    p_false=Count('pasien', filter=Q(lingkar_perut__lte=25), distinct=True),
+                    p_none=Count('pasien', filter=Q(lingkar_perut=None), distinct=True),
                 )
                 _ = (data['p_true'] or 0,
                      data['p_false'] or 0,
                      data['p_none'] or 0,)
 
-            jumlah_pasien += _[0] + _[1]
+            elif item == 'pengukuran_fungsi_paru':
+                data = fs.aggregate(
+                    p_true=Count('pasien', filter=Q(pengukuran_fungsi_paru='Normal'), distinct=True),
+                    p_false=Count('pasien', filter=Q(pengukuran_fungsi_paru='Buruk'), distinct=True),
+                    p_none=Count('pasien', filter=Q(pengukuran_fungsi_paru=None), distinct=True),
+                )
+                _ = (data['p_true'] or 0,
+                     data['p_false'] or 0,
+                     data['p_none'] or 0,)
+                
+            else:
+                data = fs.aggregate(
+                    p_true=Count('pasien', filter=Q(**{item: True}), distinct=True),
+                    p_false=Count('pasien', filter=Q(**{item: False}), distinct=True),
+                    p_none=Count('pasien', filter=Q(**{item: None}), distinct=True),
+                )
+                
+                _ = (data['p_true'] or 0,
+                     data['p_false'] or 0,
+                     data['p_none'] or 0,)
+
+            jumlah_pasien = _[0] + _[1]
 
             if _[0] == 0:
                 hasil_ya = 0
@@ -459,7 +484,7 @@ class Pemeriksaan(models.Model):
             else:
                 percent = (_[0]/jumlah_pasien) * 100.0
                 hasil_ya = percent
-                total_ya += percent
+                total_ya += _[0]
 
             if _[1] == 0:
                 hasil_tidak = 0
@@ -467,19 +492,23 @@ class Pemeriksaan(models.Model):
             else:
                 percent = (_[1]/jumlah_pasien) * 100.0
                 hasil_tidak = percent
-                total_tidak += percent
+                total_tidak += _[1]
 
             jumlah_ya.append(hasil_ya)
             jumlah_tidak.append(hasil_tidak)
 
         # tambah total
-        jumlah_ya.append(total_ya/len(jumlah_ya))
-        jumlah_tidak.append(total_tidak/len(jumlah_tidak))
+        jumlah_ya.append((total_ya/jumlah_keseluruhan_pasien) * 100.0)
+        jumlah_tidak.append((total_tidak/jumlah_keseluruhan_pasien) * 100.0)
         return [jumlah_ya, jumlah_tidak, total_ya, total_tidak]
 
     @staticmethod
-    def get_data_by_wilayah(qs, item, loop):
-        return Pemeriksaan.get_data_analisa_grafik(qs, item, loop)
+    def get_data_by_wilayah(qs, item, loop, extra):
+        return Pemeriksaan.get_data_analisa_grafik(qs, item, loop, extra)
+    
+    @staticmethod
+    def get_data_by_usia(qs, item, loop, extra):
+        return Pemeriksaan.get_data_analisa_grafik(qs, item, loop, extra)
 
     # def save(self, *args, **kwargs):
     #     # Check how the current values differ from ._loaded_values. For example,

@@ -24,24 +24,24 @@ class ImportFileExcelForm(forms.Form):
 class AnalisaTabelForm(forms.Form):
 
     PEMERIKSAAN_CHOICE = (
-        ('merokok', 'Merokok'),
-        ('gula', 'Gula Darah'),
-        ('benjolan_payudara', 'Benjolan Payudara'),
-        ('indeks_masa_tubuh', 'Index Massa Tubuh'),
-        ('iva', 'IVA'),
-        ('kadar_alkohol_pernapasan', 'Alkohol dalam Pernapasan'),
-        ('kolestrol', 'Kolesterol'),
-        ('konsumsi_alkohol', 'Konsumsi Alkohol'),
-        ('kurang_aktifitas_fisik', 'Kurang Aktifitas'),
-        ('lingkar_perut', 'Lingkar Perut'),
-        ('pengukuran_fungsi_paru', 'Fungsi Paru Sederhana'),
-        ('kurang_sayur_dan_buah', 'Kurang Sayuran dan Buah'),
-        ('tes_amfetamin_urin', 'Amfetamin Urin'),
-        ('tekanandarah', 'Tekanan Darah'),
-        ('trigliserida', 'Trigliserida'),
-        ('penyuluhan_potensi_cedera', 'Penyuluhan Cedera'),
-        ('penyuluhan_rokok', 'Penyuluhan Rokok'),
-        ('penyuluhan_iva_and_cbe', 'Penyuluhan IVA'),
+        ('merokok', 'Merokok'),  # boolean
+        ('gula', 'Gula Darah'),  # input
+        ('benjolan_payudara', 'Benjolan Payudara'),  # boolean
+        ('indeks_masa_tubuh', 'Index Massa Tubuh'),  # input
+        ('iva', 'IVA'),  # boolean
+        ('kadar_alkohol_pernapasan', 'Alkohol dalam Pernapasan'),  # boolean
+        ('kolestrol', 'Kolesterol'),  # input
+        ('konsumsi_alkohol', 'Konsumsi Alkohol'),  # boolean
+        ('kurang_aktifitas_fisik', 'Kurang Aktifitas'),  # boolean
+        ('lingkar_perut', 'Lingkar Perut'),  # input
+        ('pengukuran_fungsi_paru', 'Fungsi Paru Sederhana'),  # input
+        ('kurang_sayur_dan_buah', 'Kurang Sayuran dan Buah'),  # boolean
+        ('tes_amfetamin_urin', 'Amfetamin Urin'),  # boolean
+        ('tekanandarah', 'Tekanan Darah'),  # input
+        ('trigliserida', 'Trigliserida'),  # input
+        ('penyuluhan_potensi_cedera', 'Penyuluhan Cedera'),  # boolean
+        ('penyuluhan_rokok', 'Penyuluhan Rokok'),  # boolean
+        ('penyuluhan_iva_and_cbe', 'Penyuluhan IVA'),  # boolean
     )
 
     JENIS_CHOICE = (

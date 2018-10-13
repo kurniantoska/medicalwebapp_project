@@ -32,7 +32,7 @@ from django.shortcuts import redirect
 import pandas as pd
 
 from django.http import (
-    HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound,
+    HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound, JsonResponse,
     HttpResponseServerError, HttpResponseRedirect
 )
 
@@ -267,7 +267,7 @@ class AnalisaGrafikView(LoginRequiredMixin, FormView):
         if jenis == 'wilayah':
             chart_categories.insert(0, puskesmas.nama)
             chart_categories.append('TOTAL')
-            results = Pemeriksaan.get_data_by_wilayah(qs, tipe_pemeriksaan, 1)
+            results = Pemeriksaan.get_data_by_wilayah(qs, tipe_pemeriksaan, 1, [])
             print("========== results", results)
             chart_data.append({
                 'name': 'Persentase Ya',
@@ -280,7 +280,27 @@ class AnalisaGrafikView(LoginRequiredMixin, FormView):
                 'data': results[1]
             })
         elif jenis == 'usia':
-            pass
+            extra_q = [
+                {'umur__gte': 15, 'umur__lte': 19},
+                {'umur__gte': 20, 'umur__lte': 44},
+                {'umur__gte': 45, 'umur__lte': 54},
+                {'umur__gte': 55, 'umur__lte': 59},
+                {'umur__gte': 60, 'umur__lte': 69},
+                {'umur__gte': 70},
+            ]
+            chart_categories = ['15-19', '20-44', '45-54', '55-59', '60-69', '70<', 'TOTAL']
+            results = Pemeriksaan.get_data_by_usia(qs, tipe_pemeriksaan, len(extra_q), extra_q)
+            print("========== results", results)
+            chart_data.append({
+                'name': 'Persentase Ya',
+                'color': '#f70000',
+                'data': results[0]
+            })
+            chart_data.append({
+                'name': 'Persentase Tidak',
+                'color': '#a9c283',
+                'data': results[1]
+            })
         else:
             data_value = []
             dates = pd.date_range("{}-1".format(dari), "{}-{}".format(sd, last_day_to), freq='MS').strftime("%b %Y").\
@@ -377,9 +397,3 @@ class DemografiPendudukCreateView(AjaxableResponseMixin, CreateView):
     model = DemografiPenduduk
     fields = '__all__'
     template_name = 'data_demografi_penduduk_htm.html'
-    
-    
-    
-    
-    
-    
