@@ -385,9 +385,8 @@ class Pemeriksaan(models.Model):
         
         jumlah_ya = []
         jumlah_tidak = []
-        total_ya = 0
-        total_tidak = 0
-        jumlah_keseluruhan_pasien = qs.aggregate(total=Count('pasien', distinct=True))['total']
+        total_ya = []
+        total_tidak = []
 
         for i in range(0, loop):
             
@@ -481,26 +480,24 @@ class Pemeriksaan(models.Model):
 
             if _[0] == 0:
                 hasil_ya = 0
-                total_ya += 0
             else:
                 percent = (_[0]/jumlah_pasien) * 100.0
                 hasil_ya = percent
-                total_ya += _[0]
+                total_ya.append(percent)
 
             if _[1] == 0:
                 hasil_tidak = 0
-                total_tidak += 0
             else:
                 percent = (_[1]/jumlah_pasien) * 100.0
                 hasil_tidak = percent
-                total_tidak += _[1]
+                total_tidak.append(percent)
 
             jumlah_ya.append(hasil_ya)
             jumlah_tidak.append(hasil_tidak)
 
         # tambah total
-        jumlah_ya.append((total_ya/jumlah_keseluruhan_pasien) * 100.0)
-        jumlah_tidak.append((total_tidak/jumlah_keseluruhan_pasien) * 100.0)
+        jumlah_ya.append(sum(total_ya)/len(total_ya))
+        jumlah_tidak.append(sum(total_tidak)/len(total_tidak))
         return [jumlah_ya, jumlah_tidak, total_ya, total_tidak]
 
     @staticmethod
@@ -508,13 +505,8 @@ class Pemeriksaan(models.Model):
     
         jumlah_laki = []
         jumlah_perempuan = []
-        total_laki = 0
-        total_perempuan = 0
-        jumlah_keseluruhan_pasien_laki = qs.aggregate(total=Count('pasien', filter=Q(pasien__gender__in=['L', 'l']),
-                                                                  distinct=True))['total']
-        jumlah_keseluruhan_pasien_perempuan = qs.aggregate(total=Count('pasien',
-                                                                       filter=Q(pasien__gender__in=['P', 'p']),
-                                                                       distinct=True))['total']
+        total_laki = []
+        total_perempuan = []
     
         for i in range(0, loop):
         
@@ -615,29 +607,24 @@ class Pemeriksaan(models.Model):
 
             if _[0] == 0:
                 hasil_ya = 0
-                total_laki += 0
             else:
                 percent = (_[0] / jumlah_pasien) * 100.0
                 hasil_ya = percent
-                total_laki += _[0]
+                total_laki.append(percent)
 
             if _[1] == 0:
                 hasil_tidak = 0
-                total_perempuan += 0
             else:
                 percent = (_[1] / jumlah_pasien) * 100.0
                 hasil_tidak = percent
-                total_perempuan += _[1]
+                total_perempuan.append(percent)
 
             jumlah_laki.append(hasil_ya)
             jumlah_perempuan.append(hasil_tidak)
 
         # tambah total
-        total_keseluruhan_laki = (total_laki / jumlah_keseluruhan_pasien_laki) * 100.0 if total_laki > 0 else 0
-        total_keseluruhan_perempuan = (total_perempuan / jumlah_keseluruhan_pasien_perempuan) * 100.0 \
-            if total_perempuan > 0 else 0
-        jumlah_laki.append(total_keseluruhan_laki)
-        jumlah_perempuan.append(total_keseluruhan_perempuan)
+        jumlah_laki.append(sum(total_laki) / len(total_laki) if len(total_laki) > 0 else 0)
+        jumlah_perempuan.append(sum(total_perempuan) / len(total_perempuan) if len(total_perempuan) > 0 else 0)
         return [jumlah_laki, jumlah_perempuan, total_laki, total_perempuan]
 
     # def save(self, *args, **kwargs):
