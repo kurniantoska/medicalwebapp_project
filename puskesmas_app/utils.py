@@ -353,6 +353,17 @@ def group_check(user):
     return user.groups.filter(name__in=['puskesmas',])
     
     
+def kecamatan_kelurahan_to_dict(KECAMATAN_KELURAHAN_SURABAYA:tuple ) -> dict:
+  dict_kecamatan_kelurahan = dict()
+  kecamatan = [KECAMATAN_KELURAHAN_SURABAYA[x][0].lower() for x in range(len(KECAMATAN_KELURAHAN_SURABAYA))]
+  kelurahan = [KECAMATAN_KELURAHAN_SURABAYA[x][1] for x in range(len(KECAMATAN_KELURAHAN_SURABAYA))]
+  for kecamatan_id in range(len(kecamatan)):
+    for kelurahan_id in range(len(kelurahan[kecamatan_id])) :
+      a, b = zip(*kelurahan[kelurahan_id])
+      dict_kecamatan_kelurahan[kecamatan[kecamatan_id]] = a
+  return dict_kecamatan_kelurahan
+  
+  
 
 
 

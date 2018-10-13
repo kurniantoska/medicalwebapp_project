@@ -32,7 +32,7 @@ ataukah "tanggal periksa" dikurangi "tanggal lahir"
 ext :
 
 10. Fisus Mata,
-   Pending... selasa 26/06/18
+   
 
 11. Satu file dari tiap puskesmas
 
@@ -71,3 +71,25 @@ Pemeriksaan :
    
    
    
+------------------------------------
+7 aug 2018
+
+Penglihatan (mata) 
+- normal
+- abnormal
+Pendengaran (telinga) 
+- normal
+- abnormal
+Gangguan Mental (SRQ20)
+- ya
+- tidak
+
+Trus utk nama2 puskesmas ada di folder
+offlone bindu itu dgn nama file ‘password usernam web PPTM’ ada 63 puskesmas
+-----------------------------------
+
+## akun disamakan dengan acuan file yang di excel : 
+D:\work\riset\puskesmas_apps\data_tuple\off line bindu jan 2018\ passord username web PPTM
+
+-----------------------------------
+

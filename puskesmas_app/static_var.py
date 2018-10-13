@@ -1,7 +1,7 @@
 """keperluan static variabel agar tidak panjang dilampirkan pada model"""
 
 
-KECAMATAN_KELURAHAN_SURABAYA = (
+KELURAHAN_DI_SURABAYA = (
     	(   "Karang Pilang", (
     		("karang_pilang", "Karang Pilang"),
     	   	("kabraon", "Kebraon"),
@@ -290,7 +290,44 @@ KECAMATAN_KELURAHAN_SURABAYA = (
     	          
     )
     
-    
+
+
+KECAMATAN_DI_SURABAYA = (
+ ('karang pilang', 'Karang Pilang'),
+ ('jambangan', 'Jambangan'),
+ ('gayungan', 'Gayungan'),
+ ('wonocolo', 'Wonocolo'),
+ ('tenggilis mejoyo', 'Tenggilis Mejoyo'),
+ ('gunung anyar', 'Gunung Anyar'),
+ ('rungkut', 'Rungkut'),
+ ('sukolilo', 'Sukolilo'),
+ ('mulyorejo', 'Mulyorejo'),
+ ('gubeng', 'Gubeng'),
+ ('wonokromo', 'Wonokromo'),
+ ('dukuh pakis', 'Dukuh Pakis'),
+ ('wiyung', 'Wiyung'),
+ ('lakasantri', 'Lakasantri'),
+ ('sambikerep', 'Sambikerep'),
+ ('tandes', 'Tandes'),
+ ('suko manunggal', 'Suko Manunggal'),
+ ('sawahan', 'Sawahan'),
+ ('tegalsari', 'Tegalsari'),
+ ('genteng', 'Genteng'),
+ ('tambaksari', 'Tambaksari'),
+ ('kenjeran', 'Kenjeran'),
+ ('bulak', 'Bulak'),
+ ('simokerto', 'Simokerto'),
+ ('semampir', 'Semampir'),
+ ('pabean cantian', 'Pabean Cantian'),
+ ('bubutan', 'Bubutan'),
+ ('krembangan', 'Krembangan'),
+ ('asemrowo','Asemrowo'),
+ ('benowo', 'Benowo'),
+ ('pakal', 'Pakal'),
+ 
+ )
+
+
 JENIS_KELAMIN = (
         ('L', 'Laki-laki'),
         ('l', 'Laki-laki'),
