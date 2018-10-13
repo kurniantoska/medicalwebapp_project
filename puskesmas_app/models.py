@@ -500,8 +500,8 @@ class Pemeriksaan(models.Model):
             jumlah_tidak.append(hasil_tidak)
 
         # tambah total
-        jumlah_ya.append(sum(total_ya)/len(total_ya))
-        jumlah_tidak.append(sum(total_tidak)/len(total_tidak))
+        jumlah_ya.append(sum(total_ya)/len(total_ya) if len(total_ya) > 0 else 0)
+        jumlah_tidak.append(sum(total_tidak)/len(total_tidak) if len(total_tidak) > 0 else 0)
         return [jumlah_ya, jumlah_tidak, total_ya, total_tidak]
 
     @staticmethod
