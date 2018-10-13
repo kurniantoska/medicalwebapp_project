@@ -259,6 +259,9 @@ class AnalisaGrafikView(LoginRequiredMixin, FormView):
         qs = Pemeriksaan.objects.filter(dari_file__petugas_puskesmas__puskesmas=puskesmas,
                                         tanggal__isnull=False, **date_range)
 
+        dates = pd.date_range("{}-1".format(dari), "{}-{}".format(sd, last_day_to), freq='MS').strftime("%m %b %Y"). \
+            tolist()
+
         chart_title = "Proporsi {} Menurut {} di Posbindu {}".format(nama_pemeriksaan, nama_jenis, puskesmas.nama)
         chart_sub_title = "{} {} s/d {} {}".format(month_from, year_from, month_to, year_to)
         chart_data = []
@@ -267,7 +270,7 @@ class AnalisaGrafikView(LoginRequiredMixin, FormView):
         if jenis == 'wilayah':
             chart_categories.insert(0, puskesmas.nama)
             chart_categories.append('TOTAL')
-            results = Pemeriksaan.get_data_by_wilayah(qs, tipe_pemeriksaan, 1, [])
+            results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, 1, [])
             print("========== results", results)
             chart_data.append({
                 'name': 'Persentase Ya',
@@ -289,7 +292,7 @@ class AnalisaGrafikView(LoginRequiredMixin, FormView):
                 {'umur__gte': 70},
             ]
             chart_categories = ['15-19', '20-44', '45-54', '55-59', '60-69', '70<', 'TOTAL']
-            results = Pemeriksaan.get_data_by_usia(qs, tipe_pemeriksaan, len(extra_q), extra_q)
+            results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, len(extra_q), extra_q)
             print("========== results", results)
             chart_data.append({
                 'name': 'Persentase Ya',
@@ -302,25 +305,44 @@ class AnalisaGrafikView(LoginRequiredMixin, FormView):
                 'data': results[1]
             })
         else:
+            extra_q = []
+    
             data_value = []
-            dates = pd.date_range("{}-1".format(dari), "{}-{}".format(sd, last_day_to), freq='MS').strftime("%b %Y").\
-                tolist()
             for i in dates:
-                chart_categories.append(i)
-                data_value.append(0)
+                split_date_format = i.split(" ")
+                chart_categories.append(" ".join(split_date_format[1:]))
+                extra_q.append({
+                    'tanggal__month': split_date_format[0],
+                    'tanggal__year': split_date_format[2]
+                })
             chart_categories.append('TOTAL')
-            data_value.append(0)
-
-            chart_data.append({
-                'name': 'Persentase Ya',
-                'color': '#f70000',
-                'data': data_value
-            })
-            chart_data.append({
-                'name': 'Persentase Tidak',
-                'color': '#a9c283',
-                'data': data_value
-            })
+            
+            if jenis == "jenis_kelamin":
+                results = Pemeriksaan.get_data_analisa_grafik_jenis_kelamin(qs, tipe_pemeriksaan, len(extra_q), extra_q)
+                print("========== results", results)
+                chart_data.append({
+                    'name': 'Persentase Laki-laki',
+                    'color': '#4572A7',
+                    'data': results[0]
+                })
+                chart_data.append({
+                    'name': 'Persentase Perempuan',
+                    'color': '#cf9898',
+                    'data': results[1]
+                })
+            else:
+                results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, len(extra_q), extra_q)
+                print("========== results", results)
+                chart_data.append({
+                    'name': 'Persentase Ya',
+                    'color': '#f70000',
+                    'data': results[0]
+                })
+                chart_data.append({
+                    'name': 'Persentase Tidak',
+                    'color': '#a9c283',
+                    'data': results[1]
+                })
 
         context.update({
             'form': form,

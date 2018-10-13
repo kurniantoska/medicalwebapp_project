@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Count
 from django.db.models import Q
+from django.db.models.functions import TruncYear, TruncMonth
 
 # from django.conf import settings
 from django.utils import timezone
@@ -503,12 +504,141 @@ class Pemeriksaan(models.Model):
         return [jumlah_ya, jumlah_tidak, total_ya, total_tidak]
 
     @staticmethod
-    def get_data_by_wilayah(qs, item, loop, extra):
-        return Pemeriksaan.get_data_analisa_grafik(qs, item, loop, extra)
+    def get_data_analisa_grafik_jenis_kelamin(qs, item, loop, extra):
     
-    @staticmethod
-    def get_data_by_usia(qs, item, loop, extra):
-        return Pemeriksaan.get_data_analisa_grafik(qs, item, loop, extra)
+        jumlah_laki = []
+        jumlah_perempuan = []
+        total_laki = 0
+        total_perempuan = 0
+        jumlah_keseluruhan_pasien_laki = qs.aggregate(total=Count('pasien', filter=Q(pasien__gender__in=['L', 'l']),
+                                                                  distinct=True))['total']
+        jumlah_keseluruhan_pasien_perempuan = qs.aggregate(total=Count('pasien',
+                                                                       filter=Q(pasien__gender__in=['P', 'p']),
+                                                                       distinct=True))['total']
+    
+        for i in range(0, loop):
+        
+            if len(extra) > 0:
+                fs = qs.filter(**extra[i])
+            else:
+                fs = qs
+        
+            if item == 'tekanandarah':
+                data = fs.aggregate(
+                    p_true_l=Count('pasien', filter=Q(sistol__gt=140, pasien__gender__in=['L', 'l']), distinct=True),
+                    p_true_p=Count('pasien', filter=Q(sistol__gt=140, pasien__gender__in=['P', 'p']), distinct=True),
+                )
+                _ = (
+                    data['p_true_l'] or 0,
+                    data['p_true_p'] or 0,
+                )
+        
+            elif item == 'trigliserida':
+                data = fs.aggregate(
+                    p_true_l=Count('pasien', filter=Q(trigliserida__gt=7, pasien__gender__in=['L', 'l']), distinct=True),
+                    p_true_p=Count('pasien', filter=Q(trigliserida__gt=7, pasien__gender__in=['p', 'p']), distinct=True),
+                )
+                _ = (
+                    data['p_true_l'] or 0,
+                    data['p_true_p'] or 0,
+                )
+        
+            elif item == 'gula':
+                data = fs.aggregate(
+                    p_true_l=Count('pasien', filter=Q(gula__lt=80, pasien__gender__in=['L', 'l']) |
+                                                    Q(gula__gt=144, pasien__gender__in=['L', 'l']), distinct=True),
+                    p_true_p=Count('pasien', filter=Q(gula__lt=80, pasien__gender__in=['P', 'p']) |
+                                                    Q(gula__gt=144, pasien__gender__in=['P', 'p']), distinct=True),
+                )
+                _ = (
+                    data['p_true_l'] or 0,
+                    data['p_true_p'] or 0,
+                )
+        
+            elif item == 'kolestrol':
+                data = fs.aggregate(
+                    p_true_l=Count('pasien', filter=Q(kolestrol__gt=200, pasien__gender__in=['L', 'l']), distinct=True),
+                    p_true_p=Count('pasien', filter=Q(kolestrol__gt=200, pasien__gender__in=['P', 'p']), distinct=True),
+                )
+                _ = (
+                    data['p_true_l'] or 0,
+                    data['p_true_p'] or 0,
+                )
+        
+            elif item == 'indeks_masa_tubuh':
+                data = fs.aggregate(
+                    p_true_l=Count('pasien', filter=Q(indeks_masa_tubuh__gt=25, pasien__gender__in=['L', 'l']),
+                                   distinct=True),
+                    p_true_p=Count('pasien', filter=Q(indeks_masa_tubuh__gt=25, pasien__gender__in=['P', 'p']),
+                                   distinct=True),
+                )
+                _ = (
+                    data['p_true_l'] or 0,
+                    data['p_true_p'] or 0,
+                )
+        
+            elif item == 'lingkar_perut':
+                data = fs.aggregate(
+                    p_true_l=Count('pasien', filter=Q(lingkar_perut__gt=25, pasien__gender__in=['L', 'l']),
+                                   distinct=True),
+                    p_true_p=Count('pasien', filter=Q(lingkar_perut__gt=25, pasien__gender__in=['P', 'p']),
+                                   distinct=True),
+                )
+                _ = (
+                    data['p_true_l'] or 0,
+                    data['p_true_p'] or 0,
+                )
+        
+            elif item == 'pengukuran_fungsi_paru':
+                data = fs.aggregate(
+                    p_true_l=Count('pasien', filter=Q(pengukuran_fungsi_paru='Normal', pasien__gender__in=['L', 'l']),
+                                   distinct=True),
+                    p_true_p=Count('pasien', filter=Q(pengukuran_fungsi_paru='Normal', pasien__gender__in=['P', 'p']),
+                                   distinct=True),
+                )
+                _ = (
+                    data['p_true_l'] or 0,
+                    data['p_true_p'] or 0,
+                )
+        
+            else:
+                data = fs.aggregate(
+                    p_true_l=Count('pasien', filter=Q(**{item: True}, pasien__gender__in=['L', 'l']), distinct=True),
+                    p_true_p=Count('pasien', filter=Q(**{item: True}, pasien__gender__in=['P', 'p']), distinct=True),
+                )
+                _ = (
+                    data['p_true_l'] or 0,
+                    data['p_true_p'] or 0,
+                )
+
+            jumlah_pasien = _[0] + _[1]
+
+            if _[0] == 0:
+                hasil_ya = 0
+                total_laki += 0
+            else:
+                percent = (_[0] / jumlah_pasien) * 100.0
+                hasil_ya = percent
+                total_laki += _[0]
+
+            if _[1] == 0:
+                hasil_tidak = 0
+                total_perempuan += 0
+            else:
+                percent = (_[1] / jumlah_pasien) * 100.0
+                hasil_tidak = percent
+                total_perempuan += _[1]
+
+            jumlah_laki.append(hasil_ya)
+            jumlah_perempuan.append(hasil_tidak)
+
+        # tambah total
+        total_keseluruhan_laki = (total_laki / jumlah_keseluruhan_pasien_laki) * 100.0 if total_laki > 0 else 0
+        total_keseluruhan_perempuan = (total_perempuan / jumlah_keseluruhan_pasien_perempuan) * 100.0 \
+            if total_perempuan > 0 else 0
+        jumlah_laki.append(total_keseluruhan_laki)
+        jumlah_perempuan.append(total_keseluruhan_perempuan)
+        return [jumlah_laki, jumlah_perempuan, total_laki, total_perempuan]
 
     # def save(self, *args, **kwargs):
     #     # Check how the current values differ from ._loaded_values. For example,
