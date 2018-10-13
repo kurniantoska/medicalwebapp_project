@@ -483,14 +483,18 @@ class Pemeriksaan(models.Model):
             else:
                 percent = (_[0]/jumlah_pasien) * 100.0
                 hasil_ya = percent
-                total_ya.append(percent)
 
             if _[1] == 0:
                 hasil_tidak = 0
             else:
                 percent = (_[1]/jumlah_pasien) * 100.0
                 hasil_tidak = percent
-                total_tidak.append(percent)
+            
+            if _[0] == 0 and _[1] == 0:
+                pass
+            else:
+                total_ya.append(hasil_ya)
+                total_tidak.append(hasil_tidak)
 
             jumlah_ya.append(hasil_ya)
             jumlah_tidak.append(hasil_tidak)
@@ -602,7 +606,7 @@ class Pemeriksaan(models.Model):
                     data['p_true_l'] or 0,
                     data['p_true_p'] or 0,
                 )
-
+                
             jumlah_pasien = _[0] + _[1]
 
             if _[0] == 0:
@@ -618,6 +622,12 @@ class Pemeriksaan(models.Model):
                 percent = (_[1] / jumlah_pasien) * 100.0
                 hasil_tidak = percent
                 total_perempuan.append(percent)
+
+            if _[0] == 0 and _[1] == 0:
+                pass
+            else:
+                total_laki.append(hasil_ya)
+                total_perempuan.append(hasil_tidak)
 
             jumlah_laki.append(hasil_ya)
             jumlah_perempuan.append(hasil_tidak)
