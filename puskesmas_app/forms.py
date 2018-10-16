@@ -50,7 +50,7 @@ class AnalisaTabelForm(forms.Form):
         ('usia', 'Usia'),
         ('waktu', 'Waktu'),
     )
-    puskesmas = forms.ModelChoiceField(queryset=Puskesmas.objects.all(), label="Posbindu")
+    puskesmas = forms.ModelChoiceField(queryset=Puskesmas.objects.all(), label="PUSKESMAS")
     dari = forms.CharField(widget=forms.TextInput(attrs={'class': 'datepicker'}))
     sd = forms.CharField(widget=forms.TextInput(attrs={'class': 'datepicker'}))
     jenis = forms.ChoiceField(choices=JENIS_CHOICE)

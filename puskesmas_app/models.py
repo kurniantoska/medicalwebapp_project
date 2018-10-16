@@ -382,6 +382,17 @@ class Pemeriksaan(models.Model):
             _ = (data['p_true'] or 0,
                  data['p_false'] or 0,
                  data['p_none'] or 0,)
+        
+        elif item == 'lingkar_perut' :
+            data = qs.aggregate(
+                p_true=Count('pasien', filter=Q(lingkar_perut__gt=90), distinct=True),
+                p_false=Count('pasien', filter=Q(lingkar_perut__lte=90), distinct=True),
+                p_none=Count('pasien', filter=Q(lingkar_perut=None), distinct=True),
+            )
+            _ = (data['p_true'] or 0,
+                 data['p_false'] or 0,
+                 data['p_none'] or 0,)
+        
         else:
             _ = Pemeriksaan.qs_model_rekapitulasi(tahun, item)
         
@@ -460,8 +471,8 @@ class Pemeriksaan(models.Model):
 
             elif item == 'lingkar_perut':
                 data = fs.aggregate(
-                    p_true=Count('pasien', filter=Q(lingkar_perut__gt=25), distinct=True),
-                    p_false=Count('pasien', filter=Q(lingkar_perut__lte=25), distinct=True),
+                    p_true=Count('pasien', filter=Q(lingkar_perut__gt=90), distinct=True),
+                    p_false=Count('pasien', filter=Q(lingkar_perut__lte=90), distinct=True),
                     p_none=Count('pasien', filter=Q(lingkar_perut=None), distinct=True),
                 )
                 _ = (data['p_true'] or 0,
@@ -588,9 +599,9 @@ class Pemeriksaan(models.Model):
         
             elif item == 'lingkar_perut':
                 data = fs.aggregate(
-                    p_true_l=Count('pasien', filter=Q(lingkar_perut__gt=25, pasien__gender__in=['L', 'l']),
+                    p_true_l=Count('pasien', filter=Q(lingkar_perut__gt=90, pasien__gender__in=['L', 'l']),
                                    distinct=True),
-                    p_true_p=Count('pasien', filter=Q(lingkar_perut__gt=25, pasien__gender__in=['P', 'p']),
+                    p_true_p=Count('pasien', filter=Q(lingkar_perut__gt=90, pasien__gender__in=['P', 'p']),
                                    distinct=True),
                 )
                 _ = (
