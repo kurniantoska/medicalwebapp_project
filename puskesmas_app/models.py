@@ -524,9 +524,11 @@ class Pemeriksaan(models.Model):
             jumlah_tidak.append(hasil_tidak)
 
         # tambah total
+        jumlah_absolut_ya = [_[0],]
+        jumlah_absolut_tidak = [_[1],]
         jumlah_ya.append(sum(total_ya)/len(total_ya) if len(total_ya) > 0 else 0)
         jumlah_tidak.append(sum(total_tidak)/len(total_tidak) if len(total_tidak) > 0 else 0)
-        return [jumlah_ya, jumlah_tidak, total_ya, total_tidak]
+        return [jumlah_ya, jumlah_tidak, total_ya, total_tidak, jumlah_absolut_ya, jumlah_absolut_tidak]
 
     @staticmethod
     def get_data_analisa_grafik_jenis_kelamin(qs, item, loop, extra):

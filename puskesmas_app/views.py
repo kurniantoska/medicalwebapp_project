@@ -215,13 +215,153 @@ def rekapitulasi_fr(request):
     return render(request, template, context)
 
 
-def analisa_tabel(request):
-    form = AnalisaTabelForm()
-    context = {
-        'form': form
-    }
-    template = 'analisa_tabel.html'
-    return render(request, template, context)
+class AnalisaTabelView(LoginRequiredMixin, FormView):
+    model = Pemeriksaan
+    template_name = 'analisa_tabel.html'
+    form_class = AnalisaTabelForm
+    success_url = reverse_lazy('puskesmas_app:analisa_tabel')
+    
+    def form_valid(self, form):
+        context = dict()
+
+        puskesmas = form.cleaned_data['puskesmas']
+        dari = form.cleaned_data['dari']
+        sd = form.cleaned_data['sd']
+        jenis = form.cleaned_data['jenis']
+        tipe_pemeriksaan = form.cleaned_data['pemeriksaan']
+
+        nama_pemeriksaan = dict(form.fields['pemeriksaan'].choices)[tipe_pemeriksaan]
+        nama_jenis = dict(form.fields['jenis'].choices)[jenis]
+
+        split_from = dari.split('-')
+        split_to = sd.split('-')
+
+        last_day_to = calendar.monthrange(int(split_to[0]), int(split_to[1]))[1]
+
+        date_range = {
+            'tanggal__range': ["{}-1".format(dari), "{}-{}".format(sd, last_day_to)]
+        }
+
+        month_from = Pemeriksaan.get_month_str(int(split_from[1]))
+        month_to = Pemeriksaan.get_month_str(int(split_to[1]))
+        year_from = split_from[0]
+        year_to = split_to[0]
+
+        qs = Pemeriksaan.objects.filter(dari_file__petugas_puskesmas__puskesmas=puskesmas,
+                                        tanggal__isnull=False, **date_range)
+
+        dates = pd.date_range("{}-1".format(dari), "{}-{}".format(sd, last_day_to), freq='MS').strftime("%m %b %Y"). \
+            tolist()
+
+        tabel_title = "Proporsi {} Menurut {} di Posbindu {}".format(nama_pemeriksaan, nama_jenis, puskesmas.nama)
+        tabel_sub_title = "{} {} s/d {} {}".format(month_from, year_from, month_to, year_to)
+        tabel_data = []
+        tabel_categories = []
+
+        if jenis == 'wilayah':
+            tabel_categories.insert(0, puskesmas.nama)
+            tabel_categories.append('TOTAL')
+            results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, 1, [])
+            print("========== results", results)
+            tabel_data.append({
+                'name': 'Jumlah Ya',
+                'data': results[4][0],
+                'suffix' : ''
+            })
+            tabel_data.append({
+                'name': 'Persentase Ya',
+                'data': round(results[0][0], 2),
+                'suffix' : '%'
+            })
+            tabel_data.append({
+                'name': 'Jumlah Tidak',
+                'data': results[5][0],
+                'suffix' : ''
+            })
+            
+            tabel_data.append({
+                'name': 'Persentase Tidak',
+                'data': round(results[1][0], 2),
+                'suffix' : '%'
+            })
+            
+            tabel_data.append({
+                'name': 'Total yang di periksa',
+                'data': results[4][0] + results[5][0],
+                'suffix' : ''
+            })
+        elif jenis == 'usia':
+            extra_q = [
+                {'umur__gte': 15, 'umur__lte': 19},
+                {'umur__gte': 20, 'umur__lte': 44},
+                {'umur__gte': 45, 'umur__lte': 54},
+                {'umur__gte': 55, 'umur__lte': 59},
+                {'umur__gte': 60, 'umur__lte': 69},
+                {'umur__gte': 70},
+            ]
+            tabel_categories = ['15-19', '20-44', '45-54', '55-59', '60-69', '70<', 'TOTAL']
+            results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, len(extra_q), extra_q)
+            print("========== results", results)
+            tabel_data.append({
+                'name': 'Persentase Ya',
+                'color': '#f70000',
+                'data': results[0]
+            })
+            tabel_data.append({
+                'name': 'Persentase Tidak',
+                'color': '#a9c283',
+                'data': results[1]
+            })
+        else:
+            extra_q = []
+    
+            data_value = []
+            for i in dates:
+                split_date_format = i.split(" ")
+                tabel_categories.append(" ".join(split_date_format[1:]))
+                extra_q.append({
+                    'tanggal__month': split_date_format[0],
+                    'tanggal__year': split_date_format[2]
+                })
+            tabel_categories.append('TOTAL')
+            
+            if jenis == "jenis_kelamin":
+                results = Pemeriksaan.get_data_analisa_grafik_jenis_kelamin(qs, tipe_pemeriksaan, len(extra_q), extra_q)
+                print("========== results", results)
+                tabel_data.append({
+                    'name': 'Persentase Laki-laki',
+                    'color': '#4572A7',
+                    'data': results[0]
+                })
+                tabel_data.append({
+                    'name': 'Persentase Perempuan',
+                    'color': '#cf9898',
+                    'data': results[1]
+                })
+            else:
+                results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, len(extra_q), extra_q)
+                print("========== results", results)
+                tabel_data.append({
+                    'name': 'Persentase Ya',
+                    'color': '#f70000',
+                    'data': results[0]
+                })
+                tabel_data.append({
+                    'name': 'Persentase Tidak',
+                    'color': '#a9c283',
+                    'data': results[1]
+                })
+
+        context.update({
+            'form': form,
+            'tabel_title': tabel_title,
+            'tabel_sub_title': tabel_sub_title,
+            'tabel_categories': tabel_categories,
+            'tabel_data': tabel_data,
+            'results': qs
+        })
+
+        return render(self.request, self.get_template_names(), context)
 
 
 class AnalisaGrafikView(LoginRequiredMixin, FormView):

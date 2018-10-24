@@ -59,6 +59,41 @@
                                                 <br/>
                                                 <button type="submit" class="btn btn-primary m-t">Tampilkan</button>
                                             </form>
+                                            <br/>
+                                            {% if request.POST %}
+                                            <div class="panel panel-default">
+                                                    <div class="panel-heading">
+                                                        <strong>{{ chart_title|safe }} {{ chart_sub_title|safe }}</strong>
+                                                    </div>
+                                                    <!-- /.panel-heading -->
+                                                    <div class="panel-body">
+                                                        <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th></th>
+                                                                    {% for data in tabel_data %}
+                                                                    <th>{{ data.name }}</th>
+                                                                    {% endfor %}
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for data1 in tabel_categories %}
+                                                                <tr> 
+                                                                    <td>{{ data1 }}</td>
+                                                                    {% for data in tabel_data %}
+                                                                        <td>{{ data.data | safe }} {{ data.suffix | safe }}</td>
+                                                                    {% endfor %}
+                                    
+                                                                </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                        <!-- /.table-responsive -->
+                                                    </div>
+                                                    <!-- /.panel-body -->
+                                                </div>
+                                            {% endif %}
+                                            
                                         </div>
                                         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
                                     </div>
@@ -74,6 +109,9 @@
                     </div>
                 </div>
                 <!-- /.end-row1 -->
+                
+
+                
             <!-- /.container-fluid -->
         <!-- /#page-wrapper -->
 {%  endblock content %}
@@ -82,16 +120,12 @@
     <!-- Speak Datepicker -->
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
-        $(function() {
-            $("#id_dari , #id_sd").datepicker({ 
-                changeMonth: true,
-                changeYear: true,
-                showButtonPanel: true,
-                dateFormat: 'yy-mm-dd',
-                onClose: function(dateText, inst) { 
-                    $(this).datepicker('setDate', new Date(inst.selectedYear, inst.selectedMonth, inst.selectedDay));
-                }
-                
+        $(document).ready(function(){
+            $("#id_dari, #id_sd").datepicker({
+            autoclose: true,
+            startView: 2,
+            minViewMode: 1,
+            format: "yyyy-mm",
             });
         } );
     </script>
