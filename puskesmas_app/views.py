@@ -256,40 +256,39 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
         tabel_title = "Proporsi {} Menurut {} di Posbindu {}".format(nama_pemeriksaan, nama_jenis, puskesmas.nama)
         tabel_sub_title = "{} {} s/d {} {}".format(month_from, year_from, month_to, year_to)
         tabel_data = []
+        tabel_kolom = []
+        tabel_header = []
+        
+        # delete soon
         tabel_categories = []
 
         if jenis == 'wilayah':
-            tabel_categories.insert(0, puskesmas.nama)
-            tabel_categories.append('TOTAL')
+            
             results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, 1, [])
-            print("========== results", results)
-            tabel_data.append({
-                'name': 'Jumlah Ya',
-                'data': results[4][0],
-                'suffix' : ''
-            })
-            tabel_data.append({
-                'name': 'Persentase Ya',
-                'data': round(results[0][0], 2),
-                'suffix' : '%'
-            })
-            tabel_data.append({
-                'name': 'Jumlah Tidak',
-                'data': results[5][0],
-                'suffix' : ''
-            })
+                        
+            jumlah_ya = results[4][0]
+            jumlah_tidak = results[5][0]
+            total_yang_diperiksa = results[4][0] + results[5][0]
+            persentase_jumlah_ya = "{} %".format(round(results[0][0], 2))
+            persentase_jumlah_tidak = "{} %".format(round(results[1][0], 2))
             
-            tabel_data.append({
-                'name': 'Persentase Tidak',
-                'data': round(results[1][0], 2),
-                'suffix' : '%'
-            })
+            tabel_header = [' ','Jumlah Ya', 'Presentase Ya', 'Jumlah Tidak', \
+                            'Presentase tidak', 'Total yg diperiksa']
+
+            tabel_data = [[puskesmas.nama, jumlah_ya, persentase_jumlah_ya, \
+                            jumlah_tidak, persentase_jumlah_tidak, \
+                            total_yang_diperiksa
+                            ],
+                          ['Total', jumlah_ya, persentase_jumlah_ya, \
+                            jumlah_tidak, persentase_jumlah_tidak, \
+                            total_yang_diperiksa ]
+                        ]
             
-            tabel_data.append({
-                'name': 'Total yang di periksa',
-                'data': results[4][0] + results[5][0],
-                'suffix' : ''
-            })
+            
+            
+            # for tabel expand data
+            # for tabel_data['name'] ==
+            
         elif jenis == 'usia':
             extra_q = [
                 {'umur__gte': 15, 'umur__lte': 19},
@@ -327,28 +326,42 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
             
             if jenis == "jenis_kelamin":
                 results = Pemeriksaan.get_data_analisa_grafik_jenis_kelamin(qs, tipe_pemeriksaan, len(extra_q), extra_q)
-                print("========== results", results)
-                tabel_data.append({
-                    'name': 'Jumlah Laki-laki',
-                    'data': results[4]
-                })
-                tabel_data.append({
-                    'name': 'Persentase Laki-laki',
-                    'data': results[0]
-                })
-                tabel_data.append({
-                    'name': 'Jumlah Perempuan',
-                    'data': results[5]
-                })
-                tabel_data.append({
-                    'name': 'Persentase Perempuan',
-                    'data': results[0]
-                })
-                tabel_data.append({
-                'name': 'Total yang di periksa',
-                'data': [x+y for x, y in zip(results[4], results[5])],
-                'suffix' : ''
-            })
+                tabel_header = ["", "Jumlah Laki-laki","Persentase Laki-laki", \
+                            "Jumlah Perempuan", "Persentase Perempuan", \
+                            "Total Yg Diperiksa"]
+                
+                jumlah_laki = results[4]
+                persentase_laki = results[0]
+                jumlah_perempuan = results[5]
+                persentase_perempuan = results[1]
+                total_yang_diperiksa = [x+y for x, y in zip(results[4], results[5])]
+                data_kolom1 = tabel_categories
+                
+                for i,v in enumerate(persentase_perempuan) :
+                    if v > 0 :
+                        persentase_perempuan[i] = round(v , 2)
+                
+                for i,v in enumerate(persentase_laki) :
+                    if v > 0 :
+                        persentase_laki[i] = round(v , 2)
+                
+                persentase_laki = ["{} %".format(x) for x in persentase_laki]
+                persentase_perempuan = ["{} %".format(x) for x in persentase_perempuan]
+                
+                
+                tabel_data = []
+                
+                for i in range(len(data_kolom1)) :
+                    tabel_data.append([ data_kolom1[i], jumlah_laki[i], \
+                        persentase_laki[i], 
+                        jumlah_perempuan[i], \
+                        persentase_perempuan[i], \
+                        total_yang_diperiksa[i]
+                        ])
+                
+                # debug
+                # print(tabel_categories)
+                
             else:
                 results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, len(extra_q), extra_q)
                 print("========== results", results)
@@ -367,7 +380,7 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
             'form': form,
             'tabel_title': tabel_title,
             'tabel_sub_title': tabel_sub_title,
-            'tabel_categories': tabel_categories,
+            'tabel_header': tabel_header,
             'tabel_data': tabel_data,
             'results': qs,
             'jenis' : jenis
