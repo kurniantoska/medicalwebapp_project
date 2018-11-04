@@ -26,7 +26,7 @@ from .forms import (
     AnalisaTabelForm,
 )
 
-from .utils import EksekusiImportBerkasExcelPasien, postpone
+from .utils import EksekusiImportBerkasExcelPasien, postpone, to_persentase
 
 from django.shortcuts import redirect
 import pandas as pd
@@ -336,18 +336,9 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
                 persentase_perempuan = results[1]
                 total_yang_diperiksa = [x+y for x, y in zip(results[4], results[5])]
                 data_kolom1 = tabel_categories
-                
-                for i,v in enumerate(persentase_perempuan) :
-                    if v > 0 :
-                        persentase_perempuan[i] = round(v , 2)
-                
-                for i,v in enumerate(persentase_laki) :
-                    if v > 0 :
-                        persentase_laki[i] = round(v , 2)
-                
-                persentase_laki = ["{} %".format(x) for x in persentase_laki]
-                persentase_perempuan = ["{} %".format(x) for x in persentase_perempuan]
-                
+        
+                persentase_laki = to_persentase(persentase_laki)
+                persentase_perempuan = to_persentase(persentase_perempuan)
                 
                 tabel_data = []
                 

@@ -364,7 +364,22 @@ def kecamatan_kelurahan_to_dict(KECAMATAN_KELURAHAN_SURABAYA:tuple ) -> dict:
   return dict_kecamatan_kelurahan
   
   
-
+def to_persentase(var_list : list) -> list :
+    """Merubah list yang didalamnya harus memuat nilai persen
+    contoh : [1,2.4,3,42,2, 0, 0] 
+    menjadi :['1%','2.4%','3.4%','42%','2%, '0%', '0%']
+    --------------
+    input 
+    var_list : list
+    
+    output : 
+    var_list : list 
+    """
+    for i,v in enumerate(var_list) :
+        if v > 0 and type(v) == float :
+            var_list[i] = round(v , 1)
+    var_list = ["{} %".format(x) for x in var_list]
+    return var_list
 
 
 
