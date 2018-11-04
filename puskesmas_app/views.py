@@ -329,15 +329,26 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
                 results = Pemeriksaan.get_data_analisa_grafik_jenis_kelamin(qs, tipe_pemeriksaan, len(extra_q), extra_q)
                 print("========== results", results)
                 tabel_data.append({
+                    'name': 'Jumlah Laki-laki',
+                    'data': results[4]
+                })
+                tabel_data.append({
                     'name': 'Persentase Laki-laki',
-                    'color': '#4572A7',
                     'data': results[0]
                 })
                 tabel_data.append({
-                    'name': 'Persentase Perempuan',
-                    'color': '#cf9898',
-                    'data': results[1]
+                    'name': 'Jumlah Perempuan',
+                    'data': results[5]
                 })
+                tabel_data.append({
+                    'name': 'Persentase Perempuan',
+                    'data': results[0]
+                })
+                tabel_data.append({
+                'name': 'Total yang di periksa',
+                'data': [x+y for x, y in zip(results[4], results[5])],
+                'suffix' : ''
+            })
             else:
                 results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, len(extra_q), extra_q)
                 print("========== results", results)
@@ -358,7 +369,8 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
             'tabel_sub_title': tabel_sub_title,
             'tabel_categories': tabel_categories,
             'tabel_data': tabel_data,
-            'results': qs
+            'results': qs,
+            'jenis' : jenis
         })
 
         return render(self.request, self.get_template_names(), context)
@@ -406,7 +418,7 @@ class AnalisaGrafikView(LoginRequiredMixin, FormView):
         chart_sub_title = "{} {} s/d {} {}".format(month_from, year_from, month_to, year_to)
         chart_data = []
         chart_categories = []
-
+        
         if jenis == 'wilayah':
             chart_categories.insert(0, puskesmas.nama)
             chart_categories.append('TOTAL')
@@ -483,14 +495,14 @@ class AnalisaGrafikView(LoginRequiredMixin, FormView):
                     'color': '#a9c283',
                     'data': results[1]
                 })
-
+        
         context.update({
             'form': form,
             'chart_title': chart_title,
             'chart_sub_title': chart_sub_title,
             'chart_categories': chart_categories,
             'chart_data': chart_data,
-            'results': qs
+            'results': qs,
         })
 
         return render(self.request, self.get_template_names(), context)

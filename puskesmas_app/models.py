@@ -537,6 +537,12 @@ class Pemeriksaan(models.Model):
         jumlah_perempuan = []
         total_laki = []
         total_perempuan = []
+        
+        #total laki absolut berupa angka
+        total_laki_absolut = []
+        total_perempuan_absolut = []
+        jumlah_laki_absolut = []
+        jumlah_perempuan_absolut = []
     
         for i in range(0, loop):
         
@@ -637,31 +643,58 @@ class Pemeriksaan(models.Model):
 
             if _[0] == 0:
                 hasil_ya = 0
+                
+                # jumlah_absolut_angka
+                hasil_ya_absolut = 0
             else:
                 percent = (_[0] / jumlah_pasien) * 100.0
                 hasil_ya = percent
                 total_laki.append(percent)
+                
+                # jumlah angka absolut
+                hasil_ya_absolut = _[0]
+                total_laki_absolut.append(_[0])
 
             if _[1] == 0:
                 hasil_tidak = 0
+                
+                # jumlah absolut angka
+                hasil_tidak_absolut = 0
             else:
                 percent = (_[1] / jumlah_pasien) * 100.0
                 hasil_tidak = percent
                 total_perempuan.append(percent)
+                
+                # jumlah angka absolut
+                hasil_tidak_absolut = _[1]
+                total_perempuan_absolut.append(_[1])
 
             if _[0] == 0 and _[1] == 0:
                 pass
             else:
                 total_laki.append(hasil_ya)
                 total_perempuan.append(hasil_tidak)
+                
+                # jumlah angka absolut
+                total_laki_absolut.append(hasil_ya_absolut)
+                total_perempuan_absolut.append(hasil_tidak_absolut)
 
             jumlah_laki.append(hasil_ya)
             jumlah_perempuan.append(hasil_tidak)
+            
+            # jumlah angka absolut
+            jumlah_laki_absolut.append(hasil_ya_absolut)
+            jumlah_perempuan_absolut.append(hasil_tidak_absolut)
+            
 
         # tambah total
         jumlah_laki.append(sum(total_laki) / len(total_laki) if len(total_laki) > 0 else 0)
         jumlah_perempuan.append(sum(total_perempuan) / len(total_perempuan) if len(total_perempuan) > 0 else 0)
-        return [jumlah_laki, jumlah_perempuan, total_laki, total_perempuan]
+        
+        # tambal total angka absolut
+        jumlah_laki_absolut.append(sum(total_laki_absolut) / len(total_laki_absolut) if len(total_laki_absolut) > 0 else 0)
+        jumlah_perempuan_absolut.append(sum(total_perempuan_absolut) / len(total_perempuan_absolut) if len(total_perempuan_absolut) > 0 else 0)
+        return [jumlah_laki, jumlah_perempuan, total_laki, total_perempuan, jumlah_laki_absolut, jumlah_perempuan_absolut, total_laki_absolut, total_perempuan_absolut]
 
     # def save(self, *args, **kwargs):
     #     # Check how the current values differ from ._loaded_values. For example,

@@ -9,11 +9,6 @@
     <!-- DataTables Responsive CSS -->
     <link href="{% static 'vendor/datatables-responsive/dataTables.responsive.css' %}" rel="stylesheet">
     
-    <!-- jquery UI -->
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
-
 {% endblock css %}
 
 {% block title %}Analisa Tabel{% endblock title %}
@@ -44,7 +39,7 @@
                                 <ul class="nav nav-tabs">
                                     <li class="active"><a href="#proporsi" data-toggle="tab">Proporsi</a>
                                     </li>
-                                    <li><a href="#cakupan" data-toggle="tab">Cakupan</a>
+                                    <!--<li><a href="#cakupan" data-toggle="tab">Cakupan</a>-->
                                     </li>
                                 </ul>
     
@@ -52,18 +47,20 @@
                                 <div class="tab-content">
                                     <div class="tab-pane fade in active" id="proporsi">
                                         <h4>Proporsi</h4>
-                                        <div class="form-group">
-                                            <form method="POST" class="form-horizontal">
+                                            
+                                            <form method="POST">
                                                 {% csrf_token %}
-                                                {{ form }}
-                                                <br/>
-                                                <button type="submit" class="btn btn-primary m-t">Tampilkan</button>
+                                                <div class="form-group form-inline">
+                                                {{ form | crispy }}
+                                                </div>
+                                                <button type="submit" class="btn btn-primary m-t">Tampilkan</button>    
                                             </form>
-                                            <br/>
+                                            
                                             {% if request.POST %}
+                                            <p></p>
                                             <div class="panel panel-default">
                                                     <div class="panel-heading">
-                                                        <strong>{{ chart_title|safe }} {{ chart_sub_title|safe }}</strong>
+                                                        <strong>{{ tabel_title|safe }} {{ tabel_sub_title|safe }}</strong>
                                                     </div>
                                                     <!-- /.panel-heading -->
                                                     <div class="panel-body">
@@ -81,9 +78,15 @@
                                                                 <tr> 
                                                                     <td>{{ data1 }}</td>
                                                                     {% for data in tabel_data %}
-                                                                        <td>{{ data.data | safe }} {{ data.suffix | safe }}</td>
+                                                                        {% if jenis == 'wilayah' %}
+                                                                           <td>{{ data.data | safe }} {{ data.suffix | safe }}</td>
+                                                                        {%endif%}
+                                                                        
+                                                                        {% if jenis == 'jenis_kelamin' %}
+                                                                            <td>{{ data.data | safe }} {{ data.suffix | safe }}</td>
+                                                                        {%endif%}
+                                                                        
                                                                     {% endfor %}
-                                    
                                                                 </tr>
                                                                 {% endfor %}
                                                             </tbody>
@@ -93,14 +96,11 @@
                                                     <!-- /.panel-body -->
                                                 </div>
                                             {% endif %}
-                                            
-                                        </div>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
                                     </div>
-                                    <div class="tab-pane fade" id="cakupan">
-                                        <h4>Cakupan</h4>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                                    </div>
+                                    <!--<div class="tab-pane fade" id="cakupan">-->
+                                    <!--    <h4>Cakupan</h4>-->
+                                    <!--    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>-->
+                                    <!--</div>-->
                                 </div>
                             </div>
                             <!-- /.panel-body -->
@@ -118,7 +118,6 @@
 
 {% block javascript %}
     <!-- Speak Datepicker -->
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
         $(document).ready(function(){
             $("#id_dari, #id_sd").datepicker({
@@ -139,6 +138,13 @@
     <script>
     $(document).ready(function() {
         $('#dataTables-example').DataTable({
+            
+            /* No ordering applied by DataTables during initialisation */
+            "ordering": false,
+            "order": [],
+            "pageLength": 50,
+
+            
             responsive: true,
             "language": {
                 "lengthMenu": "Menampilkan _MENU_ entri per halaman",
