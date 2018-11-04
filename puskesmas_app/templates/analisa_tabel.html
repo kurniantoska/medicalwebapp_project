@@ -47,29 +47,31 @@
                                 <div class="tab-content">
                                     <div class="tab-pane fade in active" id="proporsi">
                                         <h4>Proporsi</h4>
-                                            
                                             <form method="POST">
                                                 {% csrf_token %}
                                                 <div class="form-group form-inline">
                                                 {{ form | crispy }}
                                                 </div>
-                                                <button type="submit" class="btn btn-primary m-t">Tampilkan</button>    
+                                                <div class="form-group form-inline">
+                                                    <button type="submit" class="btn btn-primary m-t pull-right">Tampilkan</button>   
+                                                </div>
+                                                <br/>
+                                                <br/>
                                             </form>
                                             
                                             {% if request.POST %}
-                                            <p></p>
                                             <div class="panel panel-default">
-                                                    <div class="panel-heading">
-                                                        <strong>{{ tabel_title|safe }} {{ tabel_sub_title|safe }}</strong>
-                                                    </div>
-                                                    <!-- /.panel-heading -->
-                                                    <div class="panel-body">
-                                                        <table id="dataTables-example" class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline" width="100%"></table>
-                                                        
-                                                        <!-- /.table-responsive -->
-                                                    </div>
-                                                    <!-- /.panel-body -->
+                                                <div class="panel-heading">
+                                                    <strong>{{ tabel_title|safe }} {{ tabel_sub_title|safe }}</strong>
                                                 </div>
+                                                <!-- /.panel-heading -->
+                                                <div class="panel-body">
+                                                    <table id="dataTables-example" class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline" width="100%"></table>
+                                                    
+                                                    <!-- /.table-responsive -->
+                                                </div>
+                                                <!-- /.panel-body -->
+                                            </div>
                                             {% endif %}
                                     </div>
                                     <!--<div class="tab-pane fade" id="cakupan">-->
@@ -112,7 +114,12 @@
     <!-- Page-Level Demo Scripts - Tables - Use for reference -->
     <script>
     
-    var dataset = {{ tabel_data | safe }};
+    var dataset = []
+    
+    {% if tabel_data %}
+        dataset = {{ tabel_data | safe }}
+    {% endif %}
+    
     var judul_thead = [
         {% for data in tabel_header %}
         { title : "{{ data }}" },
