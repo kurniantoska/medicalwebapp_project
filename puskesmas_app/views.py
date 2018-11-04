@@ -334,13 +334,23 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
                 persentase_laki = results[0]
                 jumlah_perempuan = results[5]
                 persentase_perempuan = results[1]
-                total_yang_diperiksa = [x+y for x, y in zip(results[4], results[5])]
+                total_yang_diperiksa = [x+y for x, y in zip(jumlah_laki, jumlah_perempuan)]
                 data_kolom1 = tabel_categories
-        
+                
+                # total_
+                jumlah_laki[-1] = sum(jumlah_laki[:-1])
+                jumlah_perempuan[-1] = sum(jumlah_perempuan[:-1])
+                total_yang_diperiksa[-1] = sum(total_yang_diperiksa[:-1])
+                persentase_laki[-1] = jumlah_laki[-1] / total_yang_diperiksa[-1] * 100 if total_yang_diperiksa[-1] > 0 else 0
+                persentase_perempuan[-1] = jumlah_perempuan[-1] / total_yang_diperiksa[-1] * 100 if total_yang_diperiksa[-1] > 0 else 0
+                
+                # finishing simbol %
                 persentase_laki = to_persentase(persentase_laki)
                 persentase_perempuan = to_persentase(persentase_perempuan)
                 
                 tabel_data = []
+                
+                
                 
                 for i in range(len(data_kolom1)) :
                     tabel_data.append([ data_kolom1[i], jumlah_laki[i], \
@@ -350,8 +360,23 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
                         total_yang_diperiksa[i]
                         ])
                 
-                # debug
-                # print(tabel_categories)
+                # # debug
+                # print("result 0")
+                # print("{}".format(results[0]))
+                # print("result 1")
+                # print("{}".format(results[1]))
+                # print("result 2")
+                # print("{}".format(results[2]))
+                # print("result 3")
+                # print("{}".format(results[3]))
+                # print("result 4")
+                # print("{}".format(results[4]))
+                # print("result 5")
+                # print("{}".format(results[5]))
+                # print("result 6")
+                # print("{}".format(results[6]))
+                # print("result 7")
+                # print("{}".format(results[7]))
                 
             else:
                 results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, len(extra_q), extra_q)
@@ -427,7 +452,7 @@ class AnalisaGrafikView(LoginRequiredMixin, FormView):
             chart_categories.insert(0, puskesmas.nama)
             chart_categories.append('TOTAL')
             results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, 1, [])
-            print("========== results", results)
+            
             chart_data.append({
                 'name': 'Persentase Ya',
                 'color': '#f70000',
@@ -449,7 +474,7 @@ class AnalisaGrafikView(LoginRequiredMixin, FormView):
             ]
             chart_categories = ['15-19', '20-44', '45-54', '55-59', '60-69', '70<', 'TOTAL']
             results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, len(extra_q), extra_q)
-            print("========== results", results)
+            
             chart_data.append({
                 'name': 'Persentase Ya',
                 'color': '#f70000',
@@ -475,7 +500,7 @@ class AnalisaGrafikView(LoginRequiredMixin, FormView):
             
             if jenis == "jenis_kelamin":
                 results = Pemeriksaan.get_data_analisa_grafik_jenis_kelamin(qs, tipe_pemeriksaan, len(extra_q), extra_q)
-                print("========== results", results)
+                
                 chart_data.append({
                     'name': 'Persentase Laki-laki',
                     'color': '#4572A7',
@@ -488,7 +513,7 @@ class AnalisaGrafikView(LoginRequiredMixin, FormView):
                 })
             else:
                 results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, len(extra_q), extra_q)
-                print("========== results", results)
+                
                 chart_data.append({
                     'name': 'Persentase Ya',
                     'color': '#f70000',

@@ -686,8 +686,7 @@ class Pemeriksaan(models.Model):
             jumlah_laki_absolut.append(hasil_ya_absolut)
             jumlah_perempuan_absolut.append(hasil_tidak_absolut)
             
-
-        # tambah total
+        # tambah total asli
         jumlah_laki.append(sum(total_laki) / len(total_laki) if len(total_laki) > 0 else 0)
         jumlah_perempuan.append(sum(total_perempuan) / len(total_perempuan) if len(total_perempuan) > 0 else 0)
         

@@ -62,7 +62,13 @@
                                             {% if request.POST %}
                                             <div class="panel panel-default">
                                                 <div class="panel-heading">
-                                                    <strong>{{ tabel_title|safe }} {{ tabel_sub_title|safe }}</strong>
+                                                    <strong>{{ tabel_title|safe }}</strong> {{ tabel_sub_title|safe }}
+                                                    <select id="exportLink" class="pull-right">
+                                                       <option>Export data</option>
+                                                       <option id="copy">Copy to clipboard</option>
+                                                       <option id="excel">Export ke excel</option>                                 
+                                                       <option id="pdf">Export ke PDF</option>
+                                                    </select>
                                                 </div>
                                                 <!-- /.panel-heading -->
                                                 <div class="panel-body">
@@ -110,6 +116,16 @@
     <script src="{% static 'vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'vendor/datatables-plugins/dataTables.bootstrap.min.js' %}"></script>
     <script src="{% static 'vendor/datatables-responsive/dataTables.responsive.js' %}"></script>
+    
+    <script src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+
+
+
+
 
     <!-- Page-Level Demo Scripts - Tables - Use for reference -->
     <script>
@@ -158,6 +174,32 @@
                     "sLast":     "Terakhir"
                 }
             },
+            
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    title: '{{ tabel_title|safe }} {{ tabel_sub_title|safe }}'
+                },
+                {
+                    extend: 'pdfHtml5',
+                    title: '{{ tabel_title|safe }} {{ tabel_sub_title|safe }}'
+                },
+                {
+                    extend: 'copyHtml5',
+                    title: '{{ tabel_title|safe }} {{ tabel_sub_title|safe }}'
+                },
+            ],
+            
+            initComplete: function() {
+           	 var $buttons = $('.dt-buttons').hide();
+             $('#exportLink').on('change', function() {
+                var btnClass = $(this).find(":selected")[0].id 
+                   ? '.buttons-' + $(this).find(":selected")[0].id 
+                   : null;
+                if (btnClass) $buttons.find(btnClass).click(); 
+             })
+           },
         });
     });
     </script>
