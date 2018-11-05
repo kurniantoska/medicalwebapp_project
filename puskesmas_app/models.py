@@ -411,6 +411,13 @@ class Pemeriksaan(models.Model):
         jumlah_tidak = []
         total_ya = []
         total_tidak = []
+        
+        #skater edited start
+        jumlah_ya_abs = []
+        jumlah_tidak_abs = []
+        total_ya_abs = []
+        total_tidak_abs = []
+        #skater edited end
 
         for i in range(0, loop):
             
@@ -504,31 +511,54 @@ class Pemeriksaan(models.Model):
 
             if _[0] == 0:
                 hasil_ya = 0
+                #ska edited start
+                hasil_ya_abs = 0
+                #ska edited stop
             else:
                 percent = (_[0]/jumlah_pasien) * 100.0
                 hasil_ya = percent
+                #ska edited start
+                hasil_ya_abs = _[0]
+                #ska edited stop
 
             if _[1] == 0:
                 hasil_tidak = 0
+                #ska edited start
+                hasil_tidak_abs = 0
+                #ska edited stop
             else:
                 percent = (_[1]/jumlah_pasien) * 100.0
                 hasil_tidak = percent
+                #ska edited start
+                hasil_tidak_abs = _[1]
+                #ska edited stop
             
             if _[0] == 0 and _[1] == 0:
                 pass
             else:
                 total_ya.append(hasil_ya)
                 total_tidak.append(hasil_tidak)
+                
+                #edited_skater
+                total_ya_abs.append(hasil_ya_abs)
+                total_tidak.append(hasil_tidak_abs)
+                #edited end
 
             jumlah_ya.append(hasil_ya)
             jumlah_tidak.append(hasil_tidak)
+            
+            #edited ska start
+            jumlah_ya_abs.append(hasil_ya_abs)
+            jumlah_tidak_abs.append(hasil_tidak_abs)
+            #edited ska end
 
-        # tambah total
-        jumlah_absolut_ya = [_[0],]
-        jumlah_absolut_tidak = [_[1],]
+        # edited ska start
+        jumlah_ya_abs.append(sum(total_ya_abs))
+        jumlah_tidak_abs.append(sum(total_tidak_abs))
+        # edited ska end
         jumlah_ya.append(sum(total_ya)/len(total_ya) if len(total_ya) > 0 else 0)
         jumlah_tidak.append(sum(total_tidak)/len(total_tidak) if len(total_tidak) > 0 else 0)
-        return [jumlah_ya, jumlah_tidak, total_ya, total_tidak, jumlah_absolut_ya, jumlah_absolut_tidak]
+        return [jumlah_ya, jumlah_tidak, total_ya, total_tidak, jumlah_ya_abs, jumlah_tidak_abs, total_ya_abs, total_tidak_abs]
 
     @staticmethod
     def get_data_analisa_grafik_jenis_kelamin(qs, item, loop, extra):
@@ -691,8 +721,8 @@ class Pemeriksaan(models.Model):
         jumlah_perempuan.append(sum(total_perempuan) / len(total_perempuan) if len(total_perempuan) > 0 else 0)
         
         # tambal total angka absolut
-        jumlah_laki_absolut.append(sum(total_laki_absolut) / len(total_laki_absolut) if len(total_laki_absolut) > 0 else 0)
-        jumlah_perempuan_absolut.append(sum(total_perempuan_absolut) / len(total_perempuan_absolut) if len(total_perempuan_absolut) > 0 else 0)
+        jumlah_laki_absolut.append(sum(total_laki_absolut))
+        jumlah_perempuan_absolut.append(sum(total_perempuan_absolut))
         return [jumlah_laki, jumlah_perempuan, total_laki, total_perempuan, jumlah_laki_absolut, jumlah_perempuan_absolut, total_laki_absolut, total_perempuan_absolut]
 
     # def save(self, *args, **kwargs):

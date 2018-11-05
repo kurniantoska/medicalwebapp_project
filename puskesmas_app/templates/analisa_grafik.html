@@ -43,7 +43,7 @@
                                             {% csrf_token %}
                                             {{ form | crispy }}
                                             </div>
-                                            <button type="submit" class="btn btn-primary m-t">Tampilkan</button>
+                                            <button type="submit" class="btn btn-primary m-t pull-right">Tampilkan</button>
                                         </form>
                                         <div class="col-md-12">
                                             {% if request.POST %}
@@ -70,6 +70,8 @@
 
 {% block javascript %}
 <script src="{% static 'vendor/highcharts/highcharts.js' %}"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
 <script>
     $(document).ready(function(){
 
@@ -134,6 +136,27 @@
                     borderWidth: 0
                 }
             },
+            
+            exporting: {
+                chartOptions: { // specific options for the exported image
+                    plotOptions: {
+                        series: {
+                            dataLabels: {
+                                enabled: true
+                            }
+                        }
+                    }
+                },
+        		filename: '{{ chart_title|safe }}-{{ chart_sub_title|safe }}',
+                fallbackToExportServer: false
+            },
+        	
+        	credits: {
+        		text: "Copyright © Kementerian Kesehatan Republik Indonesia",
+        		href: 'http://medicalappwebproject.xyz'
+        	},
+            
+            
             series: {{ chart_data|safe }}
         });
         {% endif %}

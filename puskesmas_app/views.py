@@ -298,19 +298,44 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
                 {'umur__gte': 60, 'umur__lte': 69},
                 {'umur__gte': 70},
             ]
-            tabel_categories = ['15-19', '20-44', '45-54', '55-59', '60-69', '70<', 'TOTAL']
+            
+            tabel_header = ["", "Jumlah Laki-laki","Persentase Laki-laki", \
+                            "Jumlah Perempuan", "Persentase Perempuan", \
+                            "Total Yg Diperiksa"]
+            
             results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, len(extra_q), extra_q)
             print("========== results", results)
-            tabel_data.append({
-                'name': 'Persentase Ya',
-                'color': '#f70000',
-                'data': results[0]
-            })
-            tabel_data.append({
-                'name': 'Persentase Tidak',
-                'color': '#a9c283',
-                'data': results[1]
-            })
+            
+            data_kolom1 = ['15-19', '20-44', '45-54', '55-59', '60-69', '>70', 'TOTAL']
+            jumlah_ya = results[4]
+            persentase_ya = results[0]
+            jumlah_tidak = results[5]
+            persentase_tidak = results[1]
+            total_yang_diperiksa = [x+y for x, y in zip(jumlah_ya, jumlah_tidak)]
+            
+            
+            #total_
+            jumlah_ya[-1] = sum(jumlah_ya[:-1])
+            jumlah_tidak[-1] = sum(jumlah_tidak[:-1])
+            total_yang_diperiksa[-1] = sum(total_yang_diperiksa[:-1])
+            persentase_ya[-1] = jumlah_ya[-1] / total_yang_diperiksa[-1] * 100 if total_yang_diperiksa[-1] > 0 else 0
+            persentase_tidak[-1] = jumlah_tidak[-1] / total_yang_diperiksa[-1] * 100 if total_yang_diperiksa[-1] > 0 else 0
+            
+            # finishing simbol %
+            persentase_ya = to_persentase(persentase_ya)
+            persentase_tidak = to_persentase(persentase_tidak)
+            
+            tabel_data = []
+                
+            for i in range(len(data_kolom1)) :
+                tabel_data.append([ data_kolom1[i], jumlah_ya[i], \
+                    persentase_ya[i], 
+                    jumlah_tidak[i], \
+                    persentase_tidak[i], \
+                    total_yang_diperiksa[i]
+                    ])
+            
+            
         else:
             extra_q = []
     
@@ -337,7 +362,7 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
                 total_yang_diperiksa = [x+y for x, y in zip(jumlah_laki, jumlah_perempuan)]
                 data_kolom1 = tabel_categories
                 
-                # total_
+                #total_
                 jumlah_laki[-1] = sum(jumlah_laki[:-1])
                 jumlah_perempuan[-1] = sum(jumlah_perempuan[:-1])
                 total_yang_diperiksa[-1] = sum(total_yang_diperiksa[:-1])
