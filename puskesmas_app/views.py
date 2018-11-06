@@ -299,8 +299,8 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
                 {'umur__gte': 70},
             ]
             
-            tabel_header = ["", "Jumlah Laki-laki","Persentase Laki-laki", \
-                            "Jumlah Perempuan", "Persentase Perempuan", \
+            tabel_header = ["", "Jumlah Ya","Persentase Ya", \
+                            "Jumlah Tidak", "Persentase Tidak", \
                             "Total Yg Diperiksa"]
             
             results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, len(extra_q), extra_q)
