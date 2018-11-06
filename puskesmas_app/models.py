@@ -248,10 +248,10 @@ class Pemeriksaan(models.Model):
     diastol = models.IntegerField(null=True)
 
     # Indeks Masa Tubuh
-    tinggi_badan = models.IntegerField(null=True)
-    berat_badan = models.IntegerField(null=True)
+    tinggi_badan = models.FloatField(null=True)
+    berat_badan = models.FloatField(null=True)
 
-    lingkar_perut = models.IntegerField(null=True)
+    lingkar_perut = models.FloatField(null=True)
     
     from .static_var import PENGUKURAN_FUNGSI_PARU
     
@@ -737,7 +737,10 @@ class Pemeriksaan(models.Model):
     def save(self, *args, **kwargs):
         if (self.berat_badan is not None) and (self.tinggi_badan is not None):
             # self.first_char for referencing to the current object
-            imt = (self.berat_badan / self.tinggi_badan**2) * 100**2
+            bb = float(self.berat_badan)
+            tb = float(self.tinggi_badan)
+            
+            imt = (bb / tb**2) * 100**2
             imt = round(imt, 2)
             self.indeks_masa_tubuh = imt
         else :

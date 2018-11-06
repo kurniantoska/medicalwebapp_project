@@ -56,6 +56,10 @@ class EksekusiImportBerkasExcelPasien():
         if data == 'None' or data == 'nan' or data == 'Nan':
             data = None
         return data
+    
+    def replace_str_comma_to_float(self, data):
+        data = data.replace(',','.')
+        return data
 
 
     def baca_data_file_excel(self):
@@ -246,6 +250,7 @@ class EksekusiImportBerkasExcelPasien():
 
         complete_data_pemeriksaan[complete_data_pemeriksaan == 'Tidak Ditemukan'] = 'False'
         complete_data_pemeriksaan[complete_data_pemeriksaan == 'Ditemukan'] = 'True'
+
         complete_data_pemeriksaan.replace(np.nan, 'None', inplace=True)
 
         # return data as dictionary
@@ -316,8 +321,16 @@ class EksekusiImportBerkasExcelPasien():
                 diastol= self.make_to_real_none(rekam_medis_stage1[34][i]),
 
                 # Indeks Masa Tubuh
-                tinggi_badan= self.make_to_real_none(rekam_medis_stage1[35][i]),
-                berat_badan= self.make_to_real_none(rekam_medis_stage1[36][i]),
+                tinggi_badan= self.replace_str_comma_to_float(
+                    self.make_to_real_none(
+                        rekam_medis_stage1[35][i]
+                        )
+                    ),
+                berat_badan= self.replace_str_comma_to_float(
+                        self.make_to_real_none(
+                            rekam_medis_stage1[36][i]
+                            )
+                    ),
 
                 lingkar_perut= self.make_to_real_none(rekam_medis_stage1[37][i]),
                 pengukuran_fungsi_paru= self.make_to_real_none(rekam_medis_stage1[38][i]),
