@@ -89,11 +89,12 @@
                                 {% for data in dataPemeriksaanObject %}
                                     <tr>
                                         <td>
-                                            <a href="{{ data.get_absolute_url }}">
+                                            <a href="{{ data.get_absolute_url }}" title="Lihat Detil berkas">
                                                 {{ data.petugas_puskesmas }}
                                             </a>
                                         </td>
-                                        <td>{{ data.file_excel }}</td>
+                                        <td><a href="{{ data.file_excel.url }}" title="Download Berkas">
+                                            {{ data.file_excel }}</a></td>
                                         <td>{{ data.imported_file }}</td>
                                         <td>{{ data.tanggal_upload | date:"H:i:s - d M y" }} </td>
                                         <td>{{ data.tanggal_revisi }}</td>
