@@ -25,18 +25,31 @@ from .views import (
 app_name = 'puskesmas_app'
 urlpatterns = [
     path('import/', views.import_data, name='import'),
-    path('registrasi_petugas/', views.registrasi_petugas, name='registrasi_petugas'),
+    
+    path('registrasi_petugas/', views.registrasi_petugas, 
+            name='registrasi_petugas'),
+    
     path('penduduk/', views.data_demografi_penduduk, name='penduduk'),
-    path('penduduk_create/', DemografiPendudukCreateView.as_view(), name='penduduk_cr'),
+    
+    path('penduduk_create/', DemografiPendudukCreateView.as_view(), 
+            name='penduduk_cr'),
+    
     path('rekapituasi_fr/', views.rekapitulasi_fr, name='rekapitulasi_fr'),
-    path('analisa_tabel/', views.AnalisaTabelView.as_view(), name='analisa_tabel'),
-    path('analisa_grafik/', views.AnalisaGrafikView.as_view(), name='analisa_grafik'),
+    
+    path('analisa_tabel/', views.AnalisaTabelView.as_view(), 
+            name='analisa_tabel'),
+    
+    path('analisa_grafik/', views.AnalisaGrafikView.as_view(), 
+            name='analisa_grafik'),
+    
     path('data_pemeriksaan/', DataPemeriksaanListView.as_view(),
          name='data-pemeriksaan-list'),
+    
     path('data_pemeriksaan/<int:pk>/',
          DataPemeriksaanDetailView.as_view(),
          name='data-pemeriksaan-detail'
          ),
+    
     path('data_pemeriksaan/delete/<int:pk>/',
          DataPemeriksaanDeleteView.as_view(),
          name='data-pemeriksaan-delete'

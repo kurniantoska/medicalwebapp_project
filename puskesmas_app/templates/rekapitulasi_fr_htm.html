@@ -106,6 +106,10 @@
 $(document).ready(function() {
     $('#dataTables-example').DataTable({
         responsive: true,
+        "lengthChange": false,
+        "searching": false,
+        "bInfo" : false,
+        "paging": false,
         
         // make default page show with 50 row
         "pageLength": 50,
