@@ -188,6 +188,9 @@ def rekapitulasi_fr(request):
         'IVA',
         'Kadar Alkohol Pernafasan',
         'Amfetamin Urin',
+        'Pemeriksaan Mata',
+        'Pemeriksaan Telinga',
+        'Gangguan Mental',
     )
     
     # list untuk referensi data filter di ORM
@@ -195,7 +198,9 @@ def rekapitulasi_fr(request):
               'konsumsi_alkohol', 'tekanandarah', 'imt',
               'gula', 'lingkar_perut', 'kolestrol',
               'asamurat', 'benjolan_payudara', 'iva', 
-              'kadar_alkohol_pernapasan', 'amfetamin_urin']
+              'kadar_alkohol_pernapasan', 'amfetamin_urin', 'tajam_penglihatan',
+              'tajam_pendengaran', 'gangguan_mental_emosional'
+              ]
     
     # simpan nilai ke dalam variabel rekap, nilai kunjungan yang beresiko dan
     # jumlah yang diperiksa
