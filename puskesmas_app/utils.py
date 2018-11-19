@@ -58,7 +58,10 @@ class EksekusiImportBerkasExcelPasien():
         return data
     
     def replace_str_comma_to_float(self, data):
-        data = data.replace(',','.')
+        try :
+            data = data.replace(',','.')
+        except :
+            data = data
         return data
 
 
