@@ -15,6 +15,8 @@ from django.views.generic.detail import DetailView
 
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 
+from collections import namedtuple
+
 from .models import (
     DataPemeriksaan, Puskesmas, Pemeriksaan,
     DemografiPenduduk, PetugasPuskesmas,
@@ -23,7 +25,7 @@ from .models import (
 
 from .forms import (
     DataPemeriksaanForm, ImportFileExcelForm, DemografiPendudukForm,
-    AnalisaTabelForm,
+    AnalisaTabelForm, AnalisaTabelDinasKotaForm
 )
 
 from .utils import EksekusiImportBerkasExcelPasien, postpone, to_persentase
@@ -225,10 +227,21 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
     form_class = AnalisaTabelForm
     success_url = reverse_lazy('puskesmas_app:analisa_tabel')
     
+    def get_form_class(self):
+        if self.request.user.groups.filter(name__in=['dinas_kota',]) :
+            return AnalisaTabelDinasKotaForm
+        return AnalisaTabelForm
+    
     def form_valid(self, form):
         context = dict()
 
-        puskesmas = form.cleaned_data['puskesmas']
+        if not self.request.user.groups.filter(name__in=['dinas_kota',]) :
+            puskesmas = form.cleaned_data['puskesmas']
+        else:
+            class Puskesmas():
+                self.nama = ''
+            puskesmas = Puskesmas()
+            puskesmas.nama = 'Seluruhnya'
         dari = form.cleaned_data['dari']
         sd = form.cleaned_data['sd']
         jenis = form.cleaned_data['jenis']
@@ -250,9 +263,18 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
         month_to = Pemeriksaan.get_month_str(int(split_to[1]))
         year_from = split_from[0]
         year_to = split_to[0]
-
-        qs = Pemeriksaan.objects.filter(dari_file__petugas_puskesmas__puskesmas=puskesmas,
+        
+        # debug
+        if not self.request.user.groups.filter(name__in=['dinas_kota',]) :
+            qs = Pemeriksaan.objects.filter(dari_file__petugas_puskesmas__puskesmas=puskesmas,
                                         tanggal__isnull=False, **date_range)
+        else:
+            # Repkapitulasi untuk grup dinas_kota
+            class Puskesmas():
+                self.nama = ''
+            puskesmas = Puskesmas()
+            puskesmas.nama = 'Seluruhnya'
+            qs = Pemeriksaan.objects.filter(tanggal__isnull=False, **date_range)
 
         dates = pd.date_range("{}-1".format(dari), "{}-{}".format(sd, last_day_to), freq='MS').strftime("%m %b %Y"). \
             tolist()

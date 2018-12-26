@@ -22,7 +22,6 @@ class ImportFileExcelForm(forms.Form):
 
     
 class AnalisaTabelForm(forms.Form):
-
     PEMERIKSAAN_CHOICE = (
         ('merokok', 'Merokok'),  # boolean
         ('gula', 'Gula Darah'),  # input
@@ -55,7 +54,12 @@ class AnalisaTabelForm(forms.Form):
     sd = forms.CharField(widget=forms.TextInput(attrs={'class': 'datepicker'}))
     jenis = forms.ChoiceField(choices=JENIS_CHOICE)
     pemeriksaan = forms.ChoiceField(choices=PEMERIKSAAN_CHOICE)
-
+    
+class AnalisaTabelDinasKotaForm(AnalisaTabelForm):
+    def __init__(self, *args, **kwargs):
+        super(AnalisaTabelDinasKotaForm, self).__init__(*args, **kwargs)
+        self.fields.pop('puskesmas')
+    
 
 class DemografiPendudukForm(ModelForm):
     class Meta:
