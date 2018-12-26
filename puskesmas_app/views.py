@@ -279,7 +279,7 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
         dates = pd.date_range("{}-1".format(dari), "{}-{}".format(sd, last_day_to), freq='MS').strftime("%m %b %Y"). \
             tolist()
 
-        tabel_title = "Proporsi {} Menurut {} di Posbindu {}".format(nama_pemeriksaan, nama_jenis, puskesmas.nama)
+        tabel_title = "Proporsi {} Menurut {} di Puskesmas {}".format(nama_pemeriksaan, nama_jenis, puskesmas.nama)
         tabel_sub_title = "{} {} s/d {} {}".format(month_from, year_from, month_to, year_to)
         tabel_data = []
         tabel_kolom = []
