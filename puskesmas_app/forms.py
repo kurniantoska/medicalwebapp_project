@@ -41,6 +41,9 @@ class AnalisaTabelForm(forms.Form):
         ('penyuluhan_potensi_cedera', 'Penyuluhan Cedera'),  # boolean
         ('penyuluhan_rokok', 'Penyuluhan Rokok'),  # boolean
         ('penyuluhan_iva_and_cbe', 'Penyuluhan IVA'),  # boolean
+        ('tajam_penglihatan', 'Tajam Penglihatan'),  # boolean
+        ('tajam_pendengaran', 'Tajam Pendengaran'),  # boolean
+        ('gangguan_mental_emosional', 'Gangguan Mental Emosional'),  # boolean
     )
 
     JENIS_CHOICE = (
