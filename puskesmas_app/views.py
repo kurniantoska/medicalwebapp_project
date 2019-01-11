@@ -193,6 +193,13 @@ def rekapitulasi_fr(request):
         'Pemeriksaan Mata',
         'Pemeriksaan Telinga',
         'Gangguan Mental',
+        'Riwayat Diabetes pada Keluarga',
+        'Riwayat Hipertensi pada Keluarga',
+        'Riwayat Penyakit Jantung pada Keluarga',
+        'Riwayat Stroke pada Keluarga',
+        'Riwayat Asma pada Keluarga',
+        'Riwayat Kanker pada Keluarga',
+        'Riwayat Kolesterol pada Keluarga',
     )
     
     # list untuk referensi data filter di ORM
@@ -201,7 +208,14 @@ def rekapitulasi_fr(request):
               'gula', 'lingkar_perut', 'kolestrol',
               'asamurat', 'benjolan_payudara', 'iva', 
               'kadar_alkohol_pernapasan', 'amfetamin_urin', 'tajam_penglihatan',
-              'tajam_pendengaran', 'gangguan_mental_emosional'
+              'tajam_pendengaran', 'gangguan_mental_emosional', 
+              'diabetes_keluarga', 
+              'hipertensi_keluarga',
+              'penyakit_jantung_keluarga', 
+              'stroke_keluarga', 
+              'asma_keluarga', 
+              'kanker_keluarga', 
+              'kolestrol_tinggi_keluarga',
               ]
     
     # simpan nilai ke dalam variabel rekap, nilai kunjungan yang beresiko dan
