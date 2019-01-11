@@ -65,6 +65,7 @@ class AnalisaTabelForm(forms.Form):
     jenis = forms.ChoiceField(choices=JENIS_CHOICE)
     pemeriksaan = forms.ChoiceField(choices=PEMERIKSAAN_CHOICE)
     
+    
 class AnalisaTabelDinasKotaForm(AnalisaTabelForm):
     def __init__(self, *args, **kwargs):
         super(AnalisaTabelDinasKotaForm, self).__init__(*args, **kwargs)
