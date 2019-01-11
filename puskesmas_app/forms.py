@@ -44,6 +44,13 @@ class AnalisaTabelForm(forms.Form):
         ('tajam_penglihatan', 'Tajam Penglihatan'),  # boolean
         ('tajam_pendengaran', 'Tajam Pendengaran'),  # boolean
         ('gangguan_mental_emosional', 'Gangguan Mental Emosional'),  # boolean
+        ('diabetes_keluarga', 'Riwayat Diabetes pada Keluarga'),
+        ('hipertensi_keluarga', 'Riwayat Hipertensi pada Keluarga'),
+        ('penyakit_jantung_keluarga', 'Riwayat Penyakit Jantung pada Keluarga'),
+        ('stroke_keluarga', 'Riwayat Stroke pada Keluarga'),
+        ('asma_keluarga', 'Riwayat Asma pada Keluarga'),
+        ('kanker_keluarga', 'Riwayat Kanker pada Keluarga'),
+        ('kolestrol_tinggi_keluarga', 'Riwayat Kolesterol pada Keluarga'),
     )
 
     JENIS_CHOICE = (
