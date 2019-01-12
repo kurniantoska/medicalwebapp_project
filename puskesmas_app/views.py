@@ -193,13 +193,22 @@ def rekapitulasi_fr(request):
         'Pemeriksaan Mata',
         'Pemeriksaan Telinga',
         'Gangguan Mental',
-        'Riwayat Diabetes pada Keluarga',
-        'Riwayat Hipertensi pada Keluarga',
-        'Riwayat Penyakit Jantung pada Keluarga',
-        'Riwayat Stroke pada Keluarga',
-        'Riwayat Asma pada Keluarga',
-        'Riwayat Kanker pada Keluarga',
-        'Riwayat Kolesterol pada Keluarga',
+        
+        'Riwayat Diabetes Keluarga',
+        'Riwayat Hipertensi Keluarga',
+        'Riwayat Penyakit Jantung Keluarga',
+        'Riwayat Stroke Keluarga',
+        'Riwayat Asma Keluarga',
+        'Riwayat Kanker Keluarga',
+        'Riwayat Kolesterol Keluarga',
+        
+        'Riwayat Diabetes Individu',
+        'Riwayat Hipertensi Individu',
+        'Riwayat Penyakit Jantung Individu',
+        'Riwayat Stroke Individu',
+        'Riwayat Asma Individu',
+        'Riwayat Kanker Individu',
+        'Riwayat Kolesterol Individu',
     )
     
     # list untuk referensi data filter di ORM
@@ -209,6 +218,7 @@ def rekapitulasi_fr(request):
               'asamurat', 'benjolan_payudara', 'iva', 
               'kadar_alkohol_pernapasan', 'amfetamin_urin', 'tajam_penglihatan',
               'tajam_pendengaran', 'gangguan_mental_emosional', 
+              
               'diabetes_keluarga', 
               'hipertensi_keluarga',
               'penyakit_jantung_keluarga', 
@@ -216,6 +226,14 @@ def rekapitulasi_fr(request):
               'asma_keluarga', 
               'kanker_keluarga', 
               'kolestrol_tinggi_keluarga',
+              
+              'diabetes_diri',
+              'hipertensi_diri',
+              'penyakit_jantung_diri',
+              'stroke_diri',
+              'asma_diri',
+              'kanker_diri',
+              'kolestrol_tinggi_diri',
               ]
     
     # simpan nilai ke dalam variabel rekap, nilai kunjungan yang beresiko dan
@@ -344,7 +362,7 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
                             "Total Yg Diperiksa"]
             
             results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, len(extra_q), extra_q)
-            print("========== results", results)
+            # print("========== results", results)
             
             data_kolom1 = ['15-19', '20-44', '45-54', '55-59', '60-69', '>70', 'TOTAL']
             jumlah_ya = results[4]

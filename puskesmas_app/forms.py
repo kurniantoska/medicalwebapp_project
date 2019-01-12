@@ -44,13 +44,22 @@ class AnalisaTabelForm(forms.Form):
         ('tajam_penglihatan', 'Tajam Penglihatan'),  # boolean
         ('tajam_pendengaran', 'Tajam Pendengaran'),  # boolean
         ('gangguan_mental_emosional', 'Gangguan Mental Emosional'),  # boolean
-        ('diabetes_keluarga', 'Riwayat Diabetes pada Keluarga'),
-        ('hipertensi_keluarga', 'Riwayat Hipertensi pada Keluarga'),
-        ('penyakit_jantung_keluarga', 'Riwayat Penyakit Jantung pada Keluarga'),
-        ('stroke_keluarga', 'Riwayat Stroke pada Keluarga'),
-        ('asma_keluarga', 'Riwayat Asma pada Keluarga'),
-        ('kanker_keluarga', 'Riwayat Kanker pada Keluarga'),
-        ('kolestrol_tinggi_keluarga', 'Riwayat Kolesterol pada Keluarga'),
+        
+        ('diabetes_keluarga', 'Riwayat Diabetes Keluarga'),
+        ('hipertensi_keluarga', 'Riwayat Hipertensi Keluarga'),
+        ('penyakit_jantung_keluarga', 'Riwayat Penyakit Jantung Keluarga'),
+        ('stroke_keluarga', 'Riwayat Stroke Keluarga'),
+        ('asma_keluarga', 'Riwayat Asma Keluarga'),
+        ('kanker_keluarga', 'Riwayat Kanker Keluarga'),
+        ('kolestrol_tinggi_keluarga', 'Riwayat Kolesterol Keluarga'),
+        
+        ('diabetes_diri', 'Riwayat Diabetes Individu'),
+        ('hipertensi_diri', 'Riwayat Hipertensi Individu'),
+        ('penyakit_jantung_diri', 'Riwayat Penyakit Jantung Individu'),
+        ('stroke_diri', 'Riwayat Stroke Individu'),
+        ('asma_diri', 'Riwayat Asma Individu'),
+        ('kanker_diri', 'Riwayat Kanker Individu'),
+        ('kolestrol_tinggi_diri', 'Riwayat Kolesterol Individu'),
     )
 
     JENIS_CHOICE = (
