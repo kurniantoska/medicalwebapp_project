@@ -48,7 +48,7 @@ class EksekusiImportBerkasExcelPasien():
     baris_awal = 9
     jumlah_data = 5
     kolom_awal = 'B'
-    kolom_akhir = 'AX'
+    kolom_akhir = 'BA'
     data_import = None
 
 
@@ -351,6 +351,13 @@ class EksekusiImportBerkasExcelPasien():
                 penyuluhan_iva_and_cbe= self.make_to_real_none(rekam_medis_stage1[46][i]),
                 penyuluhan_rokok= self.make_to_real_none(rekam_medis_stage1[47][i]),
                 penyuluhan_potensi_cedera= self.make_to_real_none(rekam_medis_stage1[48][i]),
+                
+                # tambahan 
+                tajam_penglihatan = self.make_to_real_none(rekam_medis_stage1[49][i]),
+                tajam_pendengaran = self.make_to_real_none(rekam_medis_stage1[50][i]),
+                gangguan_mental_emosional = self.make_to_real_none(rekam_medis_stage1[51][i]),
+                
+                
                 )
 
             object_pemeriksaan.append(temp)

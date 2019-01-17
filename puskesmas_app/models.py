@@ -285,7 +285,7 @@ class Pemeriksaan(models.Model):
     
     tajam_penglihatan = models.CharField(max_length=9, choices=NORMAL_ABNORMAL, null=True)
     tajam_pendengaran = models.CharField(max_length=9, choices=NORMAL_ABNORMAL, null=True)
-    gangguan_mental_emosional = models.NullBooleanField()
+    gangguan_mental_emosional = models.IntegerField()
     
     def __str__(self):
         return "{}, {}".format(self.tanggal, self.pasien.nama_pasien)
@@ -393,6 +393,37 @@ class Pemeriksaan(models.Model):
                  data['p_false'] or 0,
                  data['p_none'] or 0,)
         
+        elif item == 'tajam_penglihatan':
+            data = qs.aggregate(
+                p_true=Count('pasien', filter=Q(tajam_penglihatan='normal'), distinct=True),
+                p_false=Count('pasien', filter=Q(tajam_penglihatan='abnormal'), distinct=True),
+                p_none=Count('pasien', filter=Q(tajam_penglihatan=None), distinct=True),
+            )
+            _ = (data['p_true'] or 0,
+                 data['p_false'] or 0,
+                 data['p_none'] or 0,)
+        
+        elif item == 'tajam_pendengaran':
+            data = qs.aggregate(
+                p_true=Count('pasien', filter=Q(tajam_pendengaran='normal'), distinct=True),
+                p_false=Count('pasien', filter=Q(tajam_pendengaran='abnormal'), distinct=True),
+                p_none=Count('pasien', filter=Q(tajam_pendengaran=None), distinct=True),
+            )
+            _ = (data['p_true'] or 0,
+                 data['p_false'] or 0,
+                 data['p_none'] or 0,)
+        
+        elif item == 'gangguan_mental_emosional' :
+            data = qs.aggregate(
+                p_true=Count('pasien', filter=Q(gangguan_mental_emosional__gte=6), distinct=True),
+                p_false=Count('pasien', filter=Q(gangguan_mental_emosional__lte=5), distinct=True),
+                p_none=Count('pasien', filter=Q(gangguan_mental_emosional=None), distinct=True),
+            )
+            
+            _ = (data['p_true'] or 0, 
+                data['p_false'] or 0, 
+                data['p_none'] or 0,)
+        
         else:
             _ = Pemeriksaan.qs_model_rekapitulasi(tahun, item)
         
@@ -495,7 +526,39 @@ class Pemeriksaan(models.Model):
                 _ = (data['p_true'] or 0,
                      data['p_false'] or 0,
                      data['p_none'] or 0,)
+            
+            
+            elif item == 'tajam_penglihatan':
+                data = fs.aggregate(
+                    p_true=Count('pasien', filter=Q(tajam_penglihatan='normal'), distinct=True),
+                    p_false=Count('pasien', filter=Q(tajam_penglihatan='abnormal'), distinct=True),
+                    p_none=Count('pasien', filter=Q(tajam_penglihatan=None), distinct=True),
+                )
+                _ = (data['p_true'] or 0,
+                     data['p_false'] or 0,
+                     data['p_none'] or 0,)
+
+            elif item == 'tajam_pendengaran':
+                data = fs.aggregate(
+                    p_true=Count('pasien', filter=Q(tajam_pendengaran='normal'), distinct=True),
+                    p_false=Count('pasien', filter=Q(tajam_pendengaran='abnormal'), distinct=True),
+                    p_none=Count('pasien', filter=Q(tajam_pendengaran=None), distinct=True),
+                )
+                _ = (data['p_true'] or 0,
+                     data['p_false'] or 0,
+                     data['p_none'] or 0,)
+            
+            elif item == 'gangguan_mental_emosional' :
+                data = fs.aggregate(
+                    p_true=Count('pasien', filter=Q(gangguan_mental_emosional__gte=6), distinct=True),
+                    p_false=Count('pasien', filter=Q(gangguan_mental_emosional__lte=5), distinct=True),
+                    p_none=Count('pasien', filter=Q(gangguan_mental_emosional=None), distinct=True),
+                )
                 
+                _ = (data['p_true'] or 0, 
+                    data['p_false'] or 0, 
+                    data['p_none'] or 0,)
+                    
             else:
                 data = fs.aggregate(
                     p_true=Count('pasien', filter=Q(**{item: True}), distinct=True),
@@ -652,6 +715,42 @@ class Pemeriksaan(models.Model):
                     p_true_l=Count('pasien', filter=Q(pengukuran_fungsi_paru='Normal', pasien__gender__in=['L', 'l']),
                                    distinct=True),
                     p_true_p=Count('pasien', filter=Q(pengukuran_fungsi_paru='Normal', pasien__gender__in=['P', 'p']),
+                                   distinct=True),
+                )
+                _ = (
+                    data['p_true_l'] or 0,
+                    data['p_true_p'] or 0,
+                )
+                
+            elif item == 'tajam_penglihatan':
+                data = fs.aggregate(
+                    p_true_l=Count('pasien', filter=Q(tajam_penglihatan='normal', pasien__gender__in=['L', 'l']),
+                                   distinct=True),
+                    p_true_p=Count('pasien', filter=Q(tajam_penglihatan='normal', pasien__gender__in=['P', 'p']),
+                                   distinct=True),
+                )
+                _ = (
+                    data['p_true_l'] or 0,
+                    data['p_true_p'] or 0,
+                )
+            
+            elif item == 'tajam_pendengaran':
+                data = fs.aggregate(
+                    p_true_l=Count('pasien', filter=Q(tajam_pendengaran='normal', pasien__gender__in=['L', 'l']),
+                                   distinct=True),
+                    p_true_p=Count('pasien', filter=Q(tajam_pendengaran='normal', pasien__gender__in=['P', 'p']),
+                                   distinct=True),
+                )
+                _ = (
+                    data['p_true_l'] or 0,
+                    data['p_true_p'] or 0,
+                )
+            
+            elif item == 'gangguan_mental_emosional':
+                data = fs.aggregate(
+                    p_true_l=Count('pasien', filter=Q(gangguan_mental_emosional__gte=6, pasien__gender__in=['L', 'l']),
+                                   distinct=True),
+                    p_true_p=Count('pasien', filter=Q(gangguan_mental_emosional=6, pasien__gender__in=['P', 'p']),
                                    distinct=True),
                 )
                 _ = (
