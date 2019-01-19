@@ -276,11 +276,11 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
             puskesmas.nama = 'Seluruhnya'
         dari = form.cleaned_data['dari']
         sd = form.cleaned_data['sd']
-        jenis = form.cleaned_data['jenis']
-        tipe_pemeriksaan = form.cleaned_data['pemeriksaan']
+        jenis = form.cleaned_data['karakteristik']
+        tipe_pemeriksaan = form.cleaned_data['faktor_risiko']
 
-        nama_pemeriksaan = dict(form.fields['pemeriksaan'].choices)[tipe_pemeriksaan]
-        nama_jenis = dict(form.fields['jenis'].choices)[jenis]
+        nama_pemeriksaan = dict(form.fields['faktor_risiko'].choices)[tipe_pemeriksaan]
+        nama_jenis = dict(form.fields['karakteristik'].choices)[jenis]
 
         split_from = dari.split('-')
         split_to = sd.split('-')
@@ -357,14 +357,14 @@ class AnalisaTabelView(LoginRequiredMixin, FormView):
                 {'umur__gte': 70},
             ]
             
-            tabel_header = ["", "Jumlah Ya","Persentase Ya", \
+            tabel_header = ["Kelompok Umur", "Jumlah Ya","Persentase Ya", \
                             "Jumlah Tidak", "Persentase Tidak", \
                             "Total Yg Diperiksa"]
             
             results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, len(extra_q), extra_q)
             # print("========== results", results)
             
-            data_kolom1 = ['15-19', '20-44', '45-54', '55-59', '60-69', '>70', 'TOTAL']
+            data_kolom1 = ['15-19', '20-44', '45-54', '55-59', '60-69', '≥70', 'TOTAL']
             jumlah_ya = results[4]
             persentase_ya = results[0]
             jumlah_tidak = results[5]
@@ -525,11 +525,11 @@ class AnalisaGrafikView(LoginRequiredMixin, FormView):
         puskesmas = form.cleaned_data['puskesmas']
         dari = form.cleaned_data['dari']
         sd = form.cleaned_data['sd']
-        jenis = form.cleaned_data['jenis']
-        tipe_pemeriksaan = form.cleaned_data['pemeriksaan']
+        jenis = form.cleaned_data['karakteristik']
+        tipe_pemeriksaan = form.cleaned_data['faktor_risiko']
 
-        nama_pemeriksaan = dict(form.fields['pemeriksaan'].choices)[tipe_pemeriksaan]
-        nama_jenis = dict(form.fields['jenis'].choices)[jenis]
+        nama_pemeriksaan = dict(form.fields['faktor_risiko'].choices)[tipe_pemeriksaan]
+        nama_jenis = dict(form.fields['karakteristik'].choices)[jenis]
 
         split_from = dari.split('-')
         split_to = sd.split('-')
@@ -580,7 +580,7 @@ class AnalisaGrafikView(LoginRequiredMixin, FormView):
                 {'umur__gte': 60, 'umur__lte': 69},
                 {'umur__gte': 70},
             ]
-            chart_categories = ['15-19', '20-44', '45-54', '55-59', '60-69', '70<', 'TOTAL']
+            chart_categories = ['15-19', '20-44', '45-54', '55-59', '60-69', '≥70', 'TOTAL']
             results = Pemeriksaan.get_data_analisa_grafik(qs, tipe_pemeriksaan, len(extra_q), extra_q)
             
             chart_data.append({

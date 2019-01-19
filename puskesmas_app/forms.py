@@ -65,14 +65,14 @@ class AnalisaTabelForm(forms.Form):
     JENIS_CHOICE = (
         ('wilayah', 'Wilayah'),
         ('jenis_kelamin', 'Jenis Kelamin'),
-        ('usia', 'Usia'),
+        ('usia', 'Umur'),
         ('waktu', 'Waktu'),
     )
     puskesmas = forms.ModelChoiceField(queryset=Puskesmas.objects.all(), label="PUSKESMAS")
     dari = forms.CharField(widget=forms.TextInput(attrs={'class': 'datepicker'}))
     sd = forms.CharField(widget=forms.TextInput(attrs={'class': 'datepicker'}))
-    jenis = forms.ChoiceField(choices=JENIS_CHOICE)
-    pemeriksaan = forms.ChoiceField(choices=PEMERIKSAAN_CHOICE)
+    karakteristik = forms.ChoiceField(choices=JENIS_CHOICE)
+    faktor_risiko = forms.ChoiceField(choices=PEMERIKSAAN_CHOICE)
     
     
 class AnalisaTabelDinasKotaForm(AnalisaTabelForm):
